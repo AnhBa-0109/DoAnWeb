@@ -1,5 +1,6 @@
 package khanh.ntu.BF.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -14,10 +15,10 @@ public class TravelGroup {
     private String name;
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
-    private List<Member> members;
+    private List<Member> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
-    private List<Expense> expenses;
+    private List<Expense> expenses = new ArrayList<>();
 
 	public TravelGroup() {
 		super();
@@ -39,4 +40,20 @@ public class TravelGroup {
 		this.name = name;
 	}
 
+	public List<Member> getMembers() {
+		return members;
+	}
+
+	public void setMembers(List<Member> members) {
+		this.members = members;
+	}
+
+	public List<Expense> getExpenses() {
+		return expenses;
+	}
+
+	public void setExpenses(List<Expense> expenses) {
+		this.expenses = expenses;
+	}
+	
 }

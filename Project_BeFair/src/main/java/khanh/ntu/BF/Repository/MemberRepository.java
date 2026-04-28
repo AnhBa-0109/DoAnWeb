@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import khanh.ntu.BF.models.Member;
 
 
-public interface MemberRepository extends JpaRepository<Member, Integer>{
+public interface MemberRepository extends JpaRepository<Member, Long>{
 	List<Member> findByGroupId(long groupId);
 }

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/head :: common-head}"></div>
+    <title>Be Fair!</title>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div class="flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <main class="lg:ml-64 flex-1 p-8">
+            <div class="flex justify-between items-end mb-10">
+                <div>
+                    <h1 class="text-4xl font-black text-slate-900 mb-2">Các nhóm của tôi</h1>
+                    <p class="text-slate-500">Tiền bạc sòng phẳng - Không lo mất bạn</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                
+                <div th:each="g : ${groups}" class="group relative overflow-hidden rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all">
+                    <div class="absolute left-0 top-0 bottom-0 w-2 bg-teal-500"></div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold text-slate-900" th:text="${g.name}">Trip Name</h3>
+                            <span class="bg-teal-100 text-teal-700 text-[10px] uppercase font-bold px-2 py-1 rounded-full">Active</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-4 text-slate-500 mb-6">
+                            <div class="flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">groups</span>
+                                <span class="text-xs" th:text="|${g.members != null ? g.members.size() : 0} thành viên|"></span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">receipt_long</span>
+                                <span class="text-xs" th:text="${g.expenses.size() + ' expenses'}">0 expenses</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <a th:href="@{'/group/' + ${g.id}}" class="w-full flex justify-center items-center gap-2 py-3 rounded-xl bg-slate-100 hover:bg-teal-500 hover:text-white transition-colors font-bold">
+                                <span>View Details</span>
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div onclick="openModal()" class="border-2 border-dashed border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center group cursor-pointer hover:border-teal-500 transition-colors">
+                    <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-4 group-hover:bg-teal-500 transition-colors">
+                        <span class="material-symbols-outlined text-slate-400 group-hover:text-white">add</span>
+                    </div>
+                    <h4 class="font-bold text-slate-500 group-hover:text-teal-600">Thêm nhóm mới</h4>
+                </div>
+
+            </div>
+        </main>
+    </div>
+    <div id="addGroupModal" class="hidden fixed inset-0 z-[60] overflow-y-auto">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"></div>
+
+    <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-2xl transition-all">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-slate-900">Tạo chuyến đi mới</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <form th:action="@{/add-group}" method="post">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Tên nhóm / Chuyến đi</label>
+                        <input type="text" name="name" required
+                               placeholder="Ví dụ: Đà Lạt 2024, Nhậu cuối tuần..."
+                               class="w-full rounded-xl border-slate-200 focus:border-teal-500 focus:ring-teal-500">
+                    </div>
+                </div>
+
+                <div class="mt-8 flex gap-3">
+                    <button type="button" onclick="closeModal()"
+                            class="flex-1 px-4 py-3 rounded-xl bg-slate-100 font-bold text-slate-600 hover:bg-slate-200 transition-all">
+                        Hủy
+                    </button>
+                    <button type="submit"
+                            class="flex-1 px-4 py-3 rounded-xl bg-teal-500 font-bold text-white hover:bg-teal-600 shadow-lg shadow-teal-200 transition-all">
+                        Tạo ngay
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    function openModal() {
+        document.getElementById('addGroupModal').classList.remove('hidden');
+    }
+    function closeModal() {
+        document.getElementById('addGroupModal').classList.add('hidden');
+    }
+    
+    // Đóng khi click ngoài vùng modal
+    window.onclick = function(event) {
+        let modal = document.getElementById('addGroupModal');
+        if (event.target == modal.querySelector('.bg-black\\/50')) {
+            closeModal();
+        }
+    }
+</script>
+</body>
+</html>
