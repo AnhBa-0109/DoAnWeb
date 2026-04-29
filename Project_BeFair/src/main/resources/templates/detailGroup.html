@@ -138,6 +138,12 @@
                                         <span class="font-bold text-teal-600" th:text="${exp.payer.name}">Người trả</span>
                                     </p>
                                 </div>
+                                <div class="text-right shrink-0">
+					                <p class="text-[15px] uppercase font-bold text-slate-400" 
+					                   th:text="${#temporals.format(exp.createAt, 'dd/MM/yyyy')}">30/04/2026</p>
+					                <p class="text-[15px] text-slate-300" 
+					                   th:text="${#temporals.format(exp.createAt, 'HH:mm')}">12:00</p>
+					            </div>
                             </div>
                         </div>
                     </div>

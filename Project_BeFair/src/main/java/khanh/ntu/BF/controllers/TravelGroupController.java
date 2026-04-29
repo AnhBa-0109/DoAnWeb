@@ -1,6 +1,8 @@
 package khanh.ntu.BF.controllers;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,15 +44,17 @@ public class TravelGroupController {
 
     //Trang chi tiết nhóm
     @GetMapping("/group/{id}")
-    public String groupDetail(@PathVariable Long id, ModelMap model) {
-        TravelGroup group = groupRepository.findById(id).orElseThrow();
+    public String detailGroup(@PathVariable Long id, ModelMap model) {
+        TravelGroup group = bfService.getGroupById(id);
+        
+        List<Member> currentMembers = group.getMembers().stream()
+                                           .filter(Member::isActive)
+                                           .collect(Collectors.toList());
         
         model.addAttribute("group", group);
-        model.addAttribute("members", memberRepository.findByGroupId(id));
-        model.addAttribute("expenses", expenseRepository.findByGroupId(id));
-        
-        Map<String, Double> balances = bfService.calculateBalances(id);
-        model.addAttribute("balances", balances);
+        model.addAttribute("members", currentMembers); 
+        model.addAttribute("expenses", group.getExpenses());
+        model.addAttribute("balances", bfService.calculateBalances(id));
         
         return "detailGroup";
     }

@@ -1,8 +1,10 @@
 package khanh.ntu.BF.services;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,9 @@ public class BeFairService {
     	groupRepository.save(group);
     }
     
+    public TravelGroup getGroupById(Long id) {
+    	return groupRepository.getReferenceById(id);
+    }
     public void addNewMember(Long groupId, String name) {
     	TravelGroup group = groupRepository.findById(groupId).get();
         Member member = new Member();
@@ -44,33 +49,54 @@ public class BeFairService {
         memberRepository.save(member);
     }
     
-    public void deleteMember(@RequestParam Long memberId) {
-    	memberRepository.deleteById(memberId);
+    public void deleteMember(Long memberId) {
+        Member m = memberRepository.findById(memberId).orElse(null);
+        if (m != null) {
+            m.setActive(false);
+            m.setLeftAt(LocalDateTime.now());
+            memberRepository.save(m);
+        }
     }
     
     public Map<String, Double> calculateBalances(Long groupId) {
-        List<Member> members = memberRepository.findByGroupId(groupId);
-        List<Expense> expenses = expenseRepository.findByGroupId(groupId);
-
+        TravelGroup group = groupRepository.findById(groupId).get();
         Map<String, Double> balances = new HashMap<>();
-        for (Member m : members) {
+        
+        for (Member m : group.getMembers()) {
             balances.put(m.getName(), 0.0);
         }
 
-        if (members.isEmpty()) return balances;
-
-        for (Expense exp : expenses) {
+        for (Expense exp : group.getExpenses()) {
             double amount = exp.getAmount();
-            double perPerson = amount / members.size();
-            String payerName = exp.getPayer().getName();
+            Member payer = exp.getPayer();
+            
+            // 1. Tìm danh sách những người phải chia hóa đơn này
+            // Điều kiện: Gia nhập trước khi hóa đơn tạo VÀ (Chưa rời nhóm HOẶC rời nhóm sau khi hóa đơn tạo)
+            List<Member> sharers = group.getMembers().stream()
+            	    .filter(m -> {
+            	        // Kiểm tra an toàn: Nếu không có ngày tham gia hoặc ngày tạo hóa đơn, mặc định là không tính
+            	        if (m.getJoinAt() == null || exp.getCreateAt() == null) {
+            	            return false; 
+            	        }
 
-            for (Member m : members) {
-                String name = m.getName();
-                if (name.equals(payerName)) {
-                    balances.put(name, balances.get(name) + (amount - perPerson));
-                } else {
-                    balances.put(name, balances.get(name) - perPerson);
-                }
+            	        boolean joinedBefore = m.getJoinAt().isBefore(exp.getCreateAt()) 
+            	                            || m.getJoinAt().isEqual(exp.getCreateAt());
+            	        
+            	        boolean stillInGroup = (m.getLeftAt() == null) 
+            	                            || m.getLeftAt().isAfter(exp.getCreateAt());
+            	        
+            	        return joinedBefore && stillInGroup;
+            	    })
+            	    .collect(Collectors.toList());
+
+            if (sharers.isEmpty()) continue;
+            double shareAmount = amount / sharers.size();
+
+
+            balances.put(payer.getName(), balances.get(payer.getName()) + amount);
+
+            for (Member s : sharers) {
+                balances.put(s.getName(), balances.get(s.getName()) - shareAmount);
             }
         }
         return balances;
