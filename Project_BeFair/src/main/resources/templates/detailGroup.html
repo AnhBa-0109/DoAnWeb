@@ -27,12 +27,30 @@
                         </div>
                         
                         <div class="flex flex-col gap-4 mb-8">
-                            <div th:each="m : ${members}" class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg transition-colors group">
-                                <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600"
-                                     th:text="${#strings.substring(m.name,0,1)}">U</div>
-                                <span class="font-medium text-slate-700" th:text="${m.name}">Tên thành viên</span>
-                            </div>
-                        </div>
+						    <div th:each="m : ${members}" class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg transition-colors group relative">
+						        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 uppercase"
+						             th:text="${#strings.substring(m.name,0,1)}">U</div>
+						        
+						        <span class="font-medium text-slate-700" th:text="${m.name}">Tên thành viên</span>
+						
+						        <div class="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+						            <button type="button"
+									        th:data-id="${m.id}"
+									        th:data-name="${m.name}"
+									        onclick="openEditMemberModal(this)" 
+									        class="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-md transition-all">
+									    <span class="material-symbols-outlined text-[20px]">edit_square</span>
+									</button>
+						            
+						            <form th:action="@{/group/{groupId}/delete-member/{memberId}(groupId=${group.id}, memberId=${m.id})}" 
+						                  method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa thành viên này? Toàn bộ hóa đơn liên quan sẽ bị ảnh hưởng!')">
+						                <button type="submit" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-all">
+						                    <span class="material-symbols-outlined text-[20px]">delete</span>
+						                </button>
+						            </form>
+						        </div>
+						    </div>
+						</div>
 
                         <form th:action="@{/group/{id}/add-member(id=${group.id})}" method="post" class="relative">
                             <input name="memberName" required class="w-full bg-slate-50 border-none rounded-xl py-3 pl-4 pr-12 text-sm focus:ring-2 focus:ring-teal-500 transition-all" 
@@ -127,5 +145,37 @@
             </div>
         </main>
     </div>
+    <div id="editMemberModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+	    <div class="bg-white p-6 rounded-2xl w-full max-w-sm shadow-2xl">
+	        <h3 class="text-lg font-bold mb-4">Đổi tên thành viên</h3>
+	        <form th:action="@{/group/{id}/edit-member(id=${group.id})}" method="post">
+	            <input type="hidden" id="editMemberId" name="memberId">
+	            <input type="text" id="editMemberName" name="newName" required 
+	                   class="w-full rounded-xl border-slate-200 focus:ring-teal-500 mb-4">
+	            <div class="flex gap-3">
+	                <button type="button" onclick="closeEditModal()" class="flex-1 py-2 bg-slate-100 rounded-lg font-bold">Hủy</button>
+	                <button type="submit" class="flex-1 py-2 bg-teal-600 text-white rounded-lg font-bold">Lưu</button>
+	            </div>
+	        </form>
+	    </div>
+	</div>
+<script>
+    function openEditMemberModal(button) {
+        // Lấy dữ liệu từ thuộc tính data- của nút được bấm
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+
+        // Điền vào form trong modal
+        document.getElementById('editMemberId').value = id;
+        document.getElementById('editMemberName').value = name;
+
+        // Hiện modal
+        document.getElementById('editMemberModal').classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+        document.getElementById('editMemberModal').classList.add('hidden');
+    }
+</script>
 </body>
 </html>

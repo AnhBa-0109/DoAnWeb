@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import khanh.ntu.BF.Repository.ExpenseRepository;
 import khanh.ntu.BF.Repository.MemberRepository;
@@ -27,6 +29,7 @@ public class BeFairService {
     public void addNewGroup(TravelGroup group) {
     	groupRepository.save(group);
     }
+    
     public void addNewMember(Long groupId, String name) {
     	TravelGroup group = groupRepository.findById(groupId).get();
         Member member = new Member();
@@ -34,6 +37,17 @@ public class BeFairService {
         member.setGroup(group);
         memberRepository.save(member);
     }
+    
+    public void editMember(@RequestParam Long memberId, @RequestParam String newName) {
+    	Member member = memberRepository.findById(memberId).get();
+        member.setName(newName);
+        memberRepository.save(member);
+    }
+    
+    public void deleteMember(@RequestParam Long memberId) {
+    	memberRepository.deleteById(memberId);
+    }
+    
     public Map<String, Double> calculateBalances(Long groupId) {
         List<Member> members = memberRepository.findByGroupId(groupId);
         List<Expense> expenses = expenseRepository.findByGroupId(groupId);

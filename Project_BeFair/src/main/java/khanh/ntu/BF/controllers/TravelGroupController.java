@@ -74,4 +74,20 @@ public class TravelGroupController {
     	bfService.addNewMember(id, memberName);
         return "redirect:/group/" + id;
     }
+    
+    //Sửa tên thành viên
+    @PostMapping("/group/{id}/edit-member")
+    public String editMember(@PathVariable Long id, @RequestParam Long memberId, @RequestParam String newName) {
+        if (newName != null && !newName.trim().isEmpty()) {
+            bfService.editMember(memberId, newName);
+        }
+        return "redirect:/group/" + id;
+    }
+    
+    //Xóa thành viên
+    @PostMapping("/group/{groupId}/delete-member/{memberId}")
+    public String deleteMember(@PathVariable Long groupId, @RequestParam Long memberId) {
+    	bfService.deleteMember(memberId);
+    	return "redirect:/group/" + groupId;
+    }
 }
