@@ -86,7 +86,7 @@ public class TravelGroupController {
     
     //Xóa thành viên
     @PostMapping("/group/{groupId}/delete-member/{memberId}")
-    public String deleteMember(@PathVariable Long groupId, @RequestParam Long memberId) {
+    public String deleteMember(@PathVariable Long groupId, @PathVariable Long memberId) {
     	bfService.deleteMember(memberId);
     	return "redirect:/group/" + groupId;
     }
