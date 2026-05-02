@@ -84,7 +84,6 @@
 						            <span class="text-teal-600 font-bold" th:text="${exp.payer.name}"></span> 
 						            trả lúc  <span th:text="${#temporals.format(exp.createAt, 'HH:mm dd/MM')}"></span>					           
 						        </p>
-						        <p class="text-[10px] text-slate-400 italic">Hóa đơn chia cho nhóm</p>
 						    </div>
 						    <div class="text-right">
 						        <p class="font-black text-slate-900" th:text="${#numbers.formatDecimal(exp.amount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></p>
@@ -112,12 +111,12 @@
                     </div>
                     
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex-1 flex flex-col overflow-hidden">
-                        <h3 class="font-bold text-slate-800 mb-4">Số dư (Cần thu/trả)</h3>
+                        <h3 class="font-bold text-slate-800 mb-4">Số tiền cần trả</h3>
                         <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-3">
                             <div th:each="entry : ${balances}" class="p-3 rounded-xl bg-slate-50 flex justify-between items-center">
                                 <span class="text-xs font-medium" th:text="${entry.key}">Tên</span>
                                 <span th:class="${entry.value >= 0 ? 'text-teal-600 font-bold text-xs' : 'text-red-500 font-bold text-xs'}"
-                                      th:text="${(entry.value > 0 ? '+' : '') + #numbers.formatDecimal(entry.value, 0, 'COMMA', 0, 'POINT')}"></span>
+                                      th:text="${(entry.value > 0 ? '+' : '') + #numbers.formatDecimal(entry.value, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
                             </div>
                         </div>
                     </div>
@@ -273,9 +272,16 @@
         document.getElementById('viewExpPayer').innerText = payer;
         document.getElementById('viewExpDate').innerText = date;
         
+        //code sinh ra action cho form xóa hóa đơn
+        const groupId = [[${group.id}]]; 
+        const deleteForm = document.getElementById('deleteExpForm');
+        deleteForm.action = `/group/${groupId}/delete-expense/${id}`;
+        
+        
         const sharerElement = document.getElementById('viewExpSharers');
         if(sharerElement) sharerElement.innerText = displaySharers;
 
+        //code hiển thị ảnh
         const imgContainer = document.getElementById('viewExpImgContainer');
         if(img && img !== 'null' && img !== '') {
             imgContainer.innerHTML = `<img src="/uploads/${img}" class="w-full h-full object-cover">`;
