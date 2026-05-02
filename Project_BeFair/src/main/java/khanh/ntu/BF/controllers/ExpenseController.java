@@ -17,7 +17,7 @@ public class ExpenseController {
     @Autowired
     private BeFairService bfService;
 
-    
+    //Thêm hóa đơn
     @PostMapping("/group/{id}/add-expense")
     public String addExpense(@PathVariable Long id, 
                              @RequestParam String description, 
@@ -30,6 +30,7 @@ public class ExpenseController {
         return "redirect:/group/" + id;
     }
     
+    //Xóa hóa đơn
     @PostMapping("/group/{groupId}/delete-expense/{expenseId}")
     public String deleteExpense(@PathVariable Long groupId, @PathVariable Long expenseId) {
         bfService.deleteExpense(expenseId);

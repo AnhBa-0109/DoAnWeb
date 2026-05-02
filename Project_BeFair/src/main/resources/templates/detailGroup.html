@@ -35,7 +35,7 @@
                             <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-500" th:text="${members.size()}">0</span>
                         </h3>
                         <div class="flex-1 overflow-y-auto custom-scroll pr-2">
-                            <div th:each="m : ${members}" class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-xl group relative transition-all">
+                            <div th:each="m : ${members}" th:data-member-id="${m.id}" th:data-member-name="${m.name}" class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-xl group relative transition-all">
                                 <div class="w-9 h-9 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center font-bold text-xs" th:text="${#strings.substring(m.name,0,1)}">U</div>
                                 <span class="text-sm font-medium text-slate-700" th:text="${m.name}">Tên</span>
                                 <div class="ml-auto opacity-0 group-hover:opacity-100 flex gap-1">
@@ -187,6 +187,10 @@
                     <span class="text-slate-400">Người đã trả:</span>
                     <span id="viewExpPayer" class="font-bold text-slate-800"></span>
                 </div>
+                <div class="flex justify-between text-sm">
+				    <span class="text-slate-400">Áp dụng cho:</span>
+				    <span id="viewExpSharers" class="font-bold text-teal-600 text-right"></span>
+				</div>
                 <div class="space-y-2">
                     <span class="text-xs font-bold text-slate-400 uppercase">Ảnh chứng từ:</span>
                     <div id="viewExpImgContainer" class="w-full h-48 bg-slate-100 rounded-2xl overflow-hidden flex items-center justify-center border-2 border-dashed border-slate-200">
@@ -244,21 +248,40 @@
         const payer = element.getAttribute('data-payer');
         const date = element.getAttribute('data-date');
         const img = element.getAttribute('data-img');
+        const sharerIdsStr = element.getAttribute('data-sharer') || "";
+		
+        const allMembers = Array.from(document.querySelectorAll('[data-member-id]')).map(el => ({
+            id: el.getAttribute('data-member-id'),
+            name: el.getAttribute('data-member-name')
+        }));
 
+        const selectedIds = sharerIdsStr.split(',');
+        let displaySharers = "";
+
+        if (selectedIds.length >= allMembers.length || sharerIdsStr === "") {
+            displaySharers = "Tất cả thành viên";
+        } else {
+            const excludedMembers = allMembers
+                .filter(m => !selectedIds.includes(m.id))
+                .map(m => m.name);
+            
+            displaySharers = "Tất cả trừ: " + excludedMembers.join(', ');
+        }
+        
         document.getElementById('viewExpDesc').innerText = desc;
         document.getElementById('viewExpAmount').innerText = parseInt(amount).toLocaleString('vi-VN') + ' đ';
         document.getElementById('viewExpPayer').innerText = payer;
         document.getElementById('viewExpDate').innerText = date;
         
+        const sharerElement = document.getElementById('viewExpSharers');
+        if(sharerElement) sharerElement.innerText = displaySharers;
+
         const imgContainer = document.getElementById('viewExpImgContainer');
         if(img && img !== 'null' && img !== '') {
             imgContainer.innerHTML = `<img src="/uploads/${img}" class="w-full h-full object-cover">`;
         } else {
             imgContainer.innerHTML = `<span class="text-slate-400 text-xs italic">Không có hình ảnh</span>`;
         }
-
-        const groupId = [[${group.id}]];
-        document.getElementById('deleteExpForm').action = `/group/${groupId}/delete-expense/${id}`;
 
         document.getElementById('viewExpenseModal').classList.remove('hidden');
     }
