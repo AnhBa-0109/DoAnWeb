@@ -2,148 +2,122 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <div th:replace="~{fragments/head :: common-head}"></div>
-    <title th:text="${group.name} + ' - Chi tiết'">Chi tiết nhóm</title>
+    <title th:text="${group.name} + ' - Chi tiết'">BeFair - Dashboard</title>
+    <style>
+        /* Tùy chỉnh thanh cuộn cho đẹp */
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen">
+<body class="bg-slate-50 text-slate-900 min-h-screen overflow-hidden">
     <div th:replace="~{fragments/header :: header}"></div>
     
     <div class="flex">
         <div th:replace="~{fragments/sidebar :: sidebar}"></div>
         
-        <main class="lg:ml-64 flex-1 p-8">
-            <div class="mb-8">
-                <h1 class="text-3xl font-black text-slate-900" th:text="${group.name}">Tên chuyến đi</h1>
-                <p class="text-slate-500">Quản lý chi tiêu và thành viên nhóm</p>
+        <main class="lg:ml-64 flex-1 p-6 h-screen flex flex-col">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl font-black text-slate-900" th:text="${group.name}">Tên chuyến đi</h1>
+                </div>
+                <button onclick="openExpenseModal()" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-teal-200 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined">add_circle</span> Thêm hóa đơn
+                </button>
             </div>
-
-            <div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter max-w-7xl mx-auto">
-
-                <section class="xl:col-span-3 flex flex-col gap-lg">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-teal-500">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="font-bold text-lg text-slate-800">Thành viên</h3>
-                            <span class="bg-teal-50 text-teal-700 px-2 py-1 rounded-md text-xs font-bold" 
-                                  th:text="${members.size()} + ' Người'">0 Active</span>
+            <!-- Phần bên trái hiển thị các thành viên của nhóm -->
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 flex-1 overflow-hidden">
+                
+                <section class="xl:col-span-3 flex flex-col gap-6 h-[calc(100vh-180px)]">
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex-1 flex flex-col overflow-hidden">
+                        <h3 class="font-bold text-slate-800 mb-4 flex items-center justify-between">
+                            Thành viên 
+                            <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-500" th:text="${members.size()}">0</span>
+                        </h3>
+                        <div class="flex-1 overflow-y-auto custom-scroll pr-2">
+                            <div th:each="m : ${members}" class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-xl group relative transition-all">
+                                <div class="w-9 h-9 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center font-bold text-xs" th:text="${#strings.substring(m.name,0,1)}">U</div>
+                                <span class="text-sm font-medium text-slate-700" th:text="${m.name}">Tên</span>
+                                <div class="ml-auto opacity-0 group-hover:opacity-100 flex gap-1">
+                                    <button th:data-id="${m.id}" th:data-name="${m.name}" onclick="openEditMemberModal(this)" class="text-slate-400 hover:text-teal-600 p-1"><span class="material-symbols-outlined text-sm">edit</span></button>
+                                    <form th:action="@{/group/{gid}/delete-member/{mid}(gid=${group.id}, mid=${m.id})}" method="post" onsubmit="return confirm('Xóa thành viên này?')">
+                                        <button class="text-slate-400 hover:text-red-500 p-1"><span class="material-symbols-outlined text-sm">delete</span></button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="flex flex-col gap-4 mb-8">
-						    <div th:each="m : ${members}" class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg transition-colors group relative">
-						        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 uppercase"
-						             th:text="${#strings.substring(m.name,0,1)}">U</div>
-						        
-						        <span class="font-medium text-slate-700" th:text="${m.name}">Tên thành viên</span>
-						
-						        <div class="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-						            <button type="button"
-									        th:data-id="${m.id}"
-									        th:data-name="${m.name}"
-									        onclick="openEditMemberModal(this)" 
-									        class="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-md transition-all">
-									    <span class="material-symbols-outlined text-[20px]">edit_square</span>
-									</button>
-						            
-						            <form th:action="@{/group/{groupId}/delete-member/{memberId}(groupId=${group.id}, memberId=${m.id})}" 
-						                  method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa thành viên này? Toàn bộ hóa đơn liên quan sẽ bị ảnh hưởng!')">
-						                <button type="submit" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-all">
-						                    <span class="material-symbols-outlined text-[20px]">delete</span>
-						                </button>
-						            </form>
-						        </div>
+						<form th:action="@{/group/{id}/add-member(id=${group.id})}" method="post" class="mt-4 pt-4 border-t relative flex items-center">
+						    <input name="memberName" required 
+						           class="w-full bg-slate-50 border-none rounded-lg py-2.5 pl-3 pr-10 text-sm focus:ring-2 focus:ring-teal-500" 
+						           placeholder="Thêm người..." type="text"/>
+						    <button type="submit" class="absolute right-2 text-teal-600 flex items-center justify-center p-1">
+						        <span class="material-symbols-outlined">add</span>
+						    </button>
+						</form>
+                    </div>
+                </section>
+				<!-- Phần ở giữa hiển thị các hóa đơn chi tiêu của nhóm -->
+                <section class="xl:col-span-6 bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col h-[calc(100vh-180px)] overflow-hidden">
+                    <div class="p-5 border-b border-slate-50 flex justify-between items-center">
+                        <h3 class="font-black text-lg text-slate-800">Lịch sử chi tiêu</h3>
+                        <div class="text-xs text-slate-400" th:text="'Tổng cộng: ' + ${expenses.size()} + ' hóa đơn'"></div>
+                    </div>
+                    <div class="flex-1 overflow-y-auto custom-scroll p-5 space-y-4">
+						<div th:each="exp : ${expenses}" 
+						     class="flex items-center gap-4 p-4 border border-slate-100 rounded-2xl hover:border-teal-200 hover:shadow-md transition-all bg-white group cursor-pointer"
+						     th:data-id="${exp.id}"
+						     th:data-desc="${exp.description}"
+						     th:data-amount="${exp.amount}"
+						     th:data-payer="${exp.payer.name}"
+						     th:data-sharer="${exp.sharerIds}"
+						     th:data-date="${#temporals.format(exp.createAt, 'dd/MM/yyyy HH:mm')}"
+						     th:data-img="${exp.invoiceImage}"
+						     onclick="viewExpenseDetail(this)">
+						    
+						    <div class="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 group-hover:bg-teal-50 transition-colors">
+						        <span class="material-symbols-outlined text-slate-400 group-hover:text-teal-600">receipt</span>
+						    </div>
+						    <div class="flex-1">
+						        <h4 class="font-bold text-slate-800" th:text="${exp.description}">Nội dung</h4>
+						        <p class="text-xs text-slate-400">
+						            <span class="text-teal-600 font-bold" th:text="${exp.payer.name}"></span> 
+						            trả lúc  <span th:text="${#temporals.format(exp.createAt, 'HH:mm dd/MM')}"></span>					           
+						        </p>
+						        <p class="text-[10px] text-slate-400 italic">Hóa đơn chia cho nhóm</p>
+						    </div>
+						    <div class="text-right">
+						        <p class="font-black text-slate-900" th:text="${#numbers.formatDecimal(exp.amount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></p>
+						        <span class="text-[10px] text-slate-400 uppercase font-bold">Chi tiết ></span>
 						    </div>
 						</div>
-
-                        <form th:action="@{/group/{id}/add-member(id=${group.id})}" method="post" class="relative">
-                            <input name="memberName" required class="w-full bg-slate-50 border-none rounded-xl py-3 pl-4 pr-12 text-sm focus:ring-2 focus:ring-teal-500 transition-all" 
-                                   placeholder="Thêm tên..." type="text"/>
-                            <button type="submit" class="absolute right-2 top-1.5 w-8 h-8 bg-teal-600 text-white rounded-lg flex items-center justify-center hover:bg-teal-700 transition-all">
-                                <span class="material-symbols-outlined text-sm">add</span>
-                            </button>
-                        </form>
                     </div>
                 </section>
-
-                <section class="xl:col-span-5 flex flex-col gap-lg">
-                    <div class="bg-white p-8 rounded-xl shadow-sm border-t-8 border-orange-400">
-                        <div class="flex items-center gap-4 mb-8">
-                            <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center">
-                                <span class="material-symbols-outlined text-3xl">receipt_long</span>
+				<!-- Phần bên phải hiển thị tổng chi cho chuyến đi đó và nợ mà các thành viên phải chả -->
+                <section class="xl:col-span-3 flex flex-col gap-6 h-[calc(100vh-180px)]">
+                    <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl text-white shadow-xl relative overflow-hidden">
+                        <div class="relative z-10">
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Tổng chi chuyến đi</p>
+                            <h2 class="text-3xl font-black mb-4">
+                                <span th:text="${#numbers.formatDecimal(#aggregates.sum(expenses.![amount]) ?: 0, 0, 'COMMA', 0, 'POINT')}">0</span><span class="text-sm ml-1">đ</span>
+                            </h2>
+                            <div class="flex items-center gap-2 text-xs text-teal-400 font-bold">
+                                <span class="material-symbols-outlined text-sm">trending_up</span>
+                                <span>Tính toán tự động bởi BeFair</span>
                             </div>
-                            <h3 class="text-xl font-black text-slate-800">Thêm chi tiêu</h3>
                         </div>
-                        
-                        <form th:action="@{/group/{id}/add-expense(id=${group.id})}" method="post" class="space-y-6">
-                            <div>
-                                <label class="block font-bold text-slate-600 mb-2 ml-1 text-sm">Nội dung chi tiêu</label>
-                                <div class="relative">
-                                    <span class="absolute left-4 top-3.5 text-slate-400 material-symbols-outlined">shopping_bag</span>
-                                    <input name="description" required class="w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-teal-500 transition-all" 
-                                           placeholder="Ví dụ: Ăn tối, Vé xe..." type="text"/>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block font-bold text-slate-600 mb-2 ml-1 text-sm">Số tiền</label>
-                                    <div class="relative">
-                                        <span class="absolute left-4 top-3.5 text-slate-400 font-bold">VNĐ</span>
-                                        <input name="amount" required class="w-full bg-slate-50 border-none rounded-xl py-4 pl-14 pr-4 focus:ring-2 focus:ring-teal-500 font-bold" 
-                                               placeholder="0" type="number"/>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block font-bold text-slate-600 mb-2 ml-1 text-sm">Người trả</label>
-                                    <select name="payerId" class="w-full bg-slate-50 border-none rounded-xl py-4 px-4 focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer">
-                                        <option th:each="m : ${members}" th:value="${m.id}" th:text="${m.name}">Thành viên</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="pt-4">
-                                <button class="w-full bg-teal-600 text-white py-5 rounded-xl font-black text-lg shadow-lg shadow-teal-200 hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2" type="submit">
-                                    <span class="material-symbols-outlined">add_circle</span>
-                                     Lưu hóa đơn
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </section>
-
-                <section class="xl:col-span-4 flex flex-col gap-lg">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-purple-500">
-                        <h3 class="font-bold text-lg text-slate-800 mb-6">Số dư hiện tại</h3>
-                        <div class="space-y-4">
-                            <div th:each="entry : ${balances}" class="flex items-center justify-between p-3 rounded-lg bg-slate-50">
-                                <div class="flex items-center gap-3">
-                                    <span class="font-medium" th:text="${entry.key}">Tên</span>
-                                </div>
-                                <span th:class="${entry.value >= 0 ? 'text-teal-600 font-bold' : 'text-red-500 font-bold'}"
-                                      th:text="${(entry.value > 0 ? '+' : '') + #numbers.formatDecimal(entry.value, 0, 0)}">
-                                    +0
-                                </span>
-                            </div>
+                        <div class="absolute -right-4 -bottom-4 text-white/5 transform -rotate-12">
+                            <span class="material-symbols-outlined text-9xl">payments</span>
                         </div>
                     </div>
-
-                    <div class="bg-white p-6 rounded-xl shadow-sm flex-1 overflow-hidden flex flex-col border-l-4 border-slate-300">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="font-bold text-lg text-slate-800">Lịch sử chi tiêu</h3>
-                        </div>
-                        <div class="space-y-4 overflow-y-auto pr-2">
-                            <div th:each="exp : ${expenses}" class="flex items-center gap-4 p-4 border border-slate-100 rounded-xl bg-white group">
-                                <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined text-slate-400">payments</span>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="font-bold text-slate-800 truncate" th:text="${exp.description}">Nội dung</h4>
-                                    <p class="text-xs text-slate-500">
-                                        <span th:text="${#numbers.formatDecimal(exp.amount, 0, 0)}">0</span> bởi 
-                                        <span class="font-bold text-teal-600" th:text="${exp.payer.name}">Người trả</span>
-                                    </p>
-                                </div>
-                                <div class="text-right shrink-0">
-					                <p class="text-[15px] uppercase font-bold text-slate-400" 
-					                   th:text="${#temporals.format(exp.createAt, 'dd/MM/yyyy')}">30/04/2026</p>
-					                <p class="text-[15px] text-slate-300" 
-					                   th:text="${#temporals.format(exp.createAt, 'HH:mm')}">12:00</p>
-					            </div>
+                    
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex-1 flex flex-col overflow-hidden">
+                        <h3 class="font-bold text-slate-800 mb-4">Số dư (Cần thu/trả)</h3>
+                        <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-3">
+                            <div th:each="entry : ${balances}" class="p-3 rounded-xl bg-slate-50 flex justify-between items-center">
+                                <span class="text-xs font-medium" th:text="${entry.key}">Tên</span>
+                                <span th:class="${entry.value >= 0 ? 'text-teal-600 font-bold text-xs' : 'text-red-500 font-bold text-xs'}"
+                                      th:text="${(entry.value > 0 ? '+' : '') + #numbers.formatDecimal(entry.value, 0, 'COMMA', 0, 'POINT')}"></span>
                             </div>
                         </div>
                     </div>
@@ -151,36 +125,146 @@
             </div>
         </main>
     </div>
-    <div id="editMemberModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-	    <div class="bg-white p-6 rounded-2xl w-full max-w-sm shadow-2xl">
-	        <h3 class="text-lg font-bold mb-4">Đổi tên thành viên</h3>
-	        <form th:action="@{/group/{id}/edit-member(id=${group.id})}" method="post">
-	            <input type="hidden" id="editMemberId" name="memberId">
-	            <input type="text" id="editMemberName" name="newName" required 
-	                   class="w-full rounded-xl border-slate-200 focus:ring-teal-500 mb-4">
-	            <div class="flex gap-3">
-	                <button type="button" onclick="closeEditModal()" class="flex-1 py-2 bg-slate-100 rounded-lg font-bold">Hủy</button>
-	                <button type="submit" class="flex-1 py-2 bg-teal-600 text-white rounded-lg font-bold">Lưu</button>
-	            </div>
-	        </form>
-	    </div>
-	</div>
-<script>
-    function openEditMemberModal(button) {
-        // Lấy dữ liệu từ thuộc tính data- của nút được bấm
-        const id = button.getAttribute('data-id');
-        const name = button.getAttribute('data-name');
 
-        // Điền vào form trong modal
-        document.getElementById('editMemberId').value = id;
-        document.getElementById('editMemberName').value = name;
+    <div id="expenseModal" class="hidden fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b flex justify-between items-center bg-slate-50">
+                <h3 class="text-xl font-black flex items-center gap-2"><span class="material-symbols-outlined text-teal-600">add_notes</span> Thêm hóa đơn mới</h3>
+                <button onclick="closeExpenseModal()" class="text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <form th:action="@{/group/{id}/add-expense(id=${group.id})}" method="post" enctype="multipart/form-data" class="p-6 space-y-5 overflow-y-auto custom-scroll">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Hóa đơn cho việc gì?</label>
+                        <input name="description" required class="w-full bg-slate-50 border-none rounded-xl py-3 focus:ring-2 focus:ring-teal-500" placeholder="VD: Ăn lẩu trà sữa..." type="text"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Số tiền (VNĐ)</label>
+                        <input name="amount" required class="w-full bg-slate-50 border-none rounded-xl py-3 font-bold text-teal-600" placeholder="0" type="number"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Người chi trả</label>
+                        <select name="payerId" class="w-full bg-slate-50 border-none rounded-xl py-3">
+                            <option th:each="m : ${members}" th:value="${m.id}" th:text="${m.name}"></option>
+                        </select>
+                    </div>
+                </div>
 
-        // Hiện modal
-        document.getElementById('editMemberModal').classList.remove('hidden');
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Áp dụng nợ cho ai?</label>
+                    <div class="bg-slate-50 p-4 rounded-xl space-y-2 max-h-40 overflow-y-auto custom-scroll border border-slate-100">
+                        <div th:each="m : ${members}" class="flex items-center gap-3">
+                            <input type="checkbox" name="sharerIds" th:value="${m.id}" checked class="rounded text-teal-600 focus:ring-teal-500 h-4 w-4">
+                            <span class="text-sm font-medium text-slate-700" th:text="${m.name}"></span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-2 italic">* Chỉ những người được tích mới phải gánh nợ hóa đơn này.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Ảnh hóa đơn (Nếu có)</label>
+                    <input name="imageFile" type="file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 cursor-pointer"/>
+                </div>
+
+                <button type="submit" class="w-full bg-teal-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-teal-200 mt-4">LƯU HÓA ĐƠN</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="viewExpenseModal" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
+            <div class="p-6 bg-slate-50 border-b flex justify-between items-center">
+                <h3 class="font-black text-lg">Chi tiết giao dịch</h3>
+                <button onclick="closeViewModal()" class="text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div class="p-8 text-center border-b">
+                <p id="viewExpDate" class="text-[10px] font-bold text-slate-400 uppercase mb-2"></p>
+                <h2 id="viewExpDesc" class="text-2xl font-black text-slate-800 mb-1"></h2>
+                <h1 id="viewExpAmount" class="text-3xl font-black text-teal-600"></h1>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-400">Người đã trả:</span>
+                    <span id="viewExpPayer" class="font-bold text-slate-800"></span>
+                </div>
+                <div class="space-y-2">
+                    <span class="text-xs font-bold text-slate-400 uppercase">Ảnh chứng từ:</span>
+                    <div id="viewExpImgContainer" class="w-full h-48 bg-slate-100 rounded-2xl overflow-hidden flex items-center justify-center border-2 border-dashed border-slate-200">
+                        </div>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <form id="deleteExpForm" method="post" class="flex-1">
+                        <button type="submit" class="w-full py-3 bg-red-50 text-red-500 rounded-xl font-bold hover:bg-red-100 transition-colors flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-sm">delete</span> Xóa hóa đơn
+                        </button>
+                    </form>
+                    <button onclick="closeViewModal()" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editMemberModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="bg-white p-6 rounded-2xl w-full max-w-sm shadow-2xl">
+            <h3 class="text-lg font-bold mb-4">Đổi tên thành viên</h3>
+            <form th:action="@{/group/{id}/edit-member(id=${group.id})}" method="post">
+                <input type="hidden" id="editMemberId" name="memberId">
+                <input type="text" id="editMemberName" name="newName" required class="w-full rounded-xl border-slate-200 focus:ring-teal-500 mb-4">
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeEditModal()" class="flex-1 py-2 bg-slate-100 rounded-lg font-bold text-sm">Hủy</button>
+                    <button type="submit" class="flex-1 py-2 bg-teal-600 text-white rounded-lg font-bold text-sm">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script th:inline="javascript">
+	function openExpenseModal() {
+	    document.getElementById('expenseModal').classList.remove('hidden');
+	}
+	
+	function closeExpenseModal() {
+	    document.getElementById('expenseModal').classList.add('hidden');
+	}
+	
+	function openEditMemberModal(btn) {
+	    document.getElementById('editMemberId').value = btn.getAttribute('data-id');
+	    document.getElementById('editMemberName').value = btn.getAttribute('data-name');
+	    document.getElementById('editMemberModal').classList.remove('hidden');
+	}
+	
+	function closeEditModal() {
+	    document.getElementById('editMemberModal').classList.add('hidden');
+	}
+	
+    function viewExpenseDetail(element) {
+        const id = element.getAttribute('data-id');
+        const desc = element.getAttribute('data-desc');
+        const amount = element.getAttribute('data-amount');
+        const payer = element.getAttribute('data-payer');
+        const date = element.getAttribute('data-date');
+        const img = element.getAttribute('data-img');
+
+        document.getElementById('viewExpDesc').innerText = desc;
+        document.getElementById('viewExpAmount').innerText = parseInt(amount).toLocaleString('vi-VN') + ' đ';
+        document.getElementById('viewExpPayer').innerText = payer;
+        document.getElementById('viewExpDate').innerText = date;
+        
+        const imgContainer = document.getElementById('viewExpImgContainer');
+        if(img && img !== 'null' && img !== '') {
+            imgContainer.innerHTML = `<img src="/uploads/${img}" class="w-full h-full object-cover">`;
+        } else {
+            imgContainer.innerHTML = `<span class="text-slate-400 text-xs italic">Không có hình ảnh</span>`;
+        }
+
+        const groupId = [[${group.id}]];
+        document.getElementById('deleteExpForm').action = `/group/${groupId}/delete-expense/${id}`;
+
+        document.getElementById('viewExpenseModal').classList.remove('hidden');
     }
 
-    function closeEditModal() {
-        document.getElementById('editMemberModal').classList.add('hidden');
+    function closeViewModal() { 
+        document.getElementById('viewExpenseModal').classList.add('hidden'); 
     }
 </script>
 </body>

@@ -18,7 +18,7 @@ public class Expense {
     private LocalDateTime createAt = LocalDateTime.now();
     
     private String invoiceImage; 
-
+    
     @ManyToOne
     @JoinColumn(name = "payer_id")
     private Member payer;
@@ -27,6 +27,8 @@ public class Expense {
     @JoinColumn(name = "group_id")
     private TravelGroup group;
     
+    @Column(name = "sharer_ids")
+    private String sharerIds = "";
     
 	public Expense() {
 		super();
@@ -110,4 +112,16 @@ public class Expense {
 	public void setCreateAt(LocalDateTime createAt) {
 		this.createAt = createAt;
 	}
+
+
+	public String getSharerIds() {
+		return sharerIds;
+	}
+
+
+	public void setSharerIds(String sharerIds) {
+		this.sharerIds = sharerIds;
+	}
+	
+	
 }
