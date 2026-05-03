@@ -1,18 +1,26 @@
-<header th:fragment="header" class="bg-white/70 backdrop-blur-xl border-b border-slate-100 sticky top-0 w-full flex justify-between items-center px-8 h-20 z-50">
-    <div class="flex items-center gap-2">
-        <div class="w-10 h-10 bg-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-teal-200">
-            <span class="material-symbols-outlined text-white">balance</span>
-        </div>
-        <span class="text-2xl font-black bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent tracking-tight italic">Be Fair! - Minh Bạch Mọi Cuộc Vui</span>
+<header th:fragment="header" class="sticky top-0 w-full flex justify-between items-center px-8 h-16 bg-[#0D9488] text-white shadow-lg z-50">
+    
+    <div class="flex items-center gap-10">
+        <a th:href="@{/home}" class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-3xl">balance</span>
+            <span class="text-xl font-black tracking-tight italic">Be Fair!</span>
+        </a>
+        
+        <nav class="hidden md:flex items-center gap-6 text-sm">
+            <a th:href="@{/home}" class="text-white border-b-2 border-white pb-1 font-['Plus_Jakarta_Sans'] font-medium h-full flex items-center">Tất cả nhóm</a>
+        </nav>
     </div>
     
-    <div class="flex items-center gap-6">
-        <form th:action="@{/logout}" method="post">
-            <button type="submit" class="flex items-center gap-2 text-slate-400 hover:text-rose-500 font-bold text-sm transition-colors">
-                <span class="material-symbols-outlined">power_settings_new</span>
-                <span>Thoát</span>
-            </button>
-        </form>
-        <img alt="User Profile" class="w-8 h-8 rounded-full border-2 border-primary-container" data-alt="close-up portrait of a friendly professional man with a clean beard and warm expression against a neutral studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOa7uIkSnJGe0T_MD-MD9V2eIP7PD_AFQKfqAZ6tDWvb1TSoEGqId3TdUKaz8dW7YYdKkuoh_UQ5exRZOQgLcUWxfG6QCzs5Dv7qLAzsZNfVvPfBozMlYaOjojSzLQe6ZUibdNp3iTFBRJOyobdRhzbBqkg9vEZSHAT_dArP5AHlHyCD6s37AvYi_Md8XSBkd3jduFze1hnTRyKlo2HK0TWoSZLdowehN9wl-idv7GiQE7Ps65aO552sbylkuz6jJbmMieDEqxvLmk"/>
+    <div class="flex items-center gap-5">
+        
+        <div class="flex items-center gap-3">
+            <a th:href="@{/logout}" class="text-white/80 hover:text-white transition-colors" title="Đăng xuất">
+                <span class="material-symbols-outlined text-[22px]">logout</span>
+            </a>
+        </div>
+        
+        <div class="h-8 w-8 ml-1">
+        	<img alt="User Profile" class="w-8 h-8 rounded-full ring-2 ring-white/20" data-alt="Close up portrait of a smiling young professional man with short dark hair in a bright studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA36jntlQJ3bTPWYz_0vikjuml3mp1sRcs_H4D-kcOSDVGf7Ul5gp_S0zCk_roBeU82T42eq_3wPacMF6zw6zHvQR7i9wcMEXswl7oERRy5SRZkbJ3n2jKge9Ssg6OiqHfzhuHn66PxxCvEZtEI69D_ZWINZN_2yLRZYObI5xs10yC_EBZW8CECjdzFTWgAe5b29mfcQAe_PwNMHfg4P-olj3jLHSlPD7LUKeUJL0upgeu_TSY0lihPVmrs5eew3uNZoyg6IlF-AcJo"/>
+        </div>
     </div>
 </header>

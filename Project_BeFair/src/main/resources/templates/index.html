@@ -7,11 +7,7 @@
 <body class="bg-slate-50 text-slate-900 min-h-screen">
 
     <div th:replace="~{fragments/header :: header}"></div>
-
-    <div class="flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
-
-        <main class="lg:ml-64 flex-1 p-8">
+        <main class="w-full max-w-7xl p-margin">
             <div class="flex justify-between items-end mb-10">
                 <div>
                     <h1 class="text-4xl font-black text-slate-900 mb-2">Các nhóm của tôi</h1>
@@ -39,9 +35,12 @@
 				    <div class="flex items-center gap-3 mb-6">
 					    <div class="flex -space-x-2">
 					        <div th:each="m, iterStat : ${g.members}" 
-					             th:if="${iterStat.index < 3}"
-					             class="w-8 h-8 rounded-full border-2 border-white bg-teal-100 flex items-center justify-center text-xs font-black text-teal-700 uppercase shadow-sm"
-					             th:text="${#strings.substring(m.name,0,1)}">A</div>
+							     th:if="${iterStat.index < 3}"
+							     class="w-8 h-8 rounded-full border-2 border-white bg-teal-100 flex items-center justify-center text-xs font-black text-teal-700 uppercase shadow-sm leading-none pb-[2px]"
+							     th:with="nameArr=${#strings.arraySplit(m.name, ' ')}"
+							     th:text="${#strings.substring(nameArr[#arrays.length(nameArr) - 1], 0, 1)}">
+							    A
+							</div>
 					        
 					        <div th:if="${g.members.size() > 3}" 
 					             class="w-8 h-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-500 shadow-sm"
@@ -65,7 +64,6 @@
 
             </div>
         </main>
-    </div>
     <div id="addGroupModal" class="hidden fixed inset-0 z-[60] overflow-y-auto">
     <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"></div>
 
