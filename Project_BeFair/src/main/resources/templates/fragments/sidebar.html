@@ -1,8 +1,8 @@
-<aside th:fragment="sidebar" class="hidden lg:flex flex-col p-4 gap-2 h-screen w-64 fixed left-0 top-16 bg-slate-50 dark:bg-slate-950 border-r border-slate-200">
+<aside th:fragment="sidebar" class="hidden lg:flex flex-col p-4 gap-2 fixed left-0 top-20 bottom-0 w-64 bg-slate-900 border-r border-slate-800 z-40 shadow-2xl">
     <div class="flex flex-col gap-1">
-        <a class="flex items-center gap-3 px-4 py-3 bg-teal-50 text-teal-700 font-bold rounded-lg" th:href="@{/home}">
-            <span class="material-symbols-outlined">dashboard</span>
-            <span>Các nhóm</span>
+        <a class="flex items-center gap-3 px-4 py-3 bg-teal-500 text-white font-bold rounded-2xl shadow-lg shadow-teal-900/50 transition-all" th:href="@{/home}">
+            <span class="material-symbols-outlined">grid_view</span>
+            <span>Các nhóm của tôi</span>
         </a>
     </div>
 </aside>

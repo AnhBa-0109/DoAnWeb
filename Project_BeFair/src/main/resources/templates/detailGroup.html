@@ -26,101 +26,120 @@
                 </button>
             </div>
             <!-- Phần bên trái hiển thị các thành viên của nhóm -->
-            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 flex-1 overflow-hidden">
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 flex-1 overflow-hidden p-1">
                 
                 <section class="xl:col-span-3 flex flex-col gap-6 h-[calc(100vh-180px)]">
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex-1 flex flex-col overflow-hidden">
-                        <h3 class="font-bold text-slate-800 mb-4 flex items-center justify-between">
-                            Thành viên 
-                            <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-500" th:text="${members.size()}">0</span>
-                        </h3>
-                        <div class="flex-1 overflow-y-auto custom-scroll pr-2">
-                            <div th:each="m : ${members}" th:data-member-id="${m.id}" th:data-member-name="${m.name}" class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-xl group relative transition-all">
-                                <div class="w-9 h-9 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center font-bold text-xs" th:text="${#strings.substring(m.name,0,1)}">U</div>
-                                <span class="text-sm font-medium text-slate-700" th:text="${m.name}">Tên</span>
-                                <div class="ml-auto opacity-0 group-hover:opacity-100 flex gap-1">
-                                    <button th:data-id="${m.id}" th:data-name="${m.name}" onclick="openEditMemberModal(this)" class="text-slate-400 hover:text-teal-600 p-1"><span class="material-symbols-outlined text-sm">edit</span></button>
-                                    <form th:action="@{/group/{gid}/delete-member/{mid}(gid=${group.id}, mid=${m.id})}" method="post" onsubmit="return confirm('Xóa thành viên này?')">
-                                        <button class="text-slate-400 hover:text-red-500 p-1"><span class="material-symbols-outlined text-sm">delete</span></button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        
-						<form th:action="@{/group/{id}/add-member(id=${group.id})}" method="post" class="mt-4 pt-4 border-t relative flex items-center">
-						    <input name="memberName" required 
-						           class="w-full bg-slate-50 border-none rounded-lg py-2.5 pl-3 pr-10 text-sm focus:ring-2 focus:ring-teal-500" 
-						           placeholder="Thêm người..." type="text"/>
-						    <button type="submit" class="absolute right-2 text-teal-600 flex items-center justify-center p-1">
-						        <span class="material-symbols-outlined">add</span>
-						    </button>
-						</form>
-                    </div>
-                </section>
+			        <div class="bg-white p-5 rounded-3xl shadow-2xl shadow-slate-300/70 border border-slate-100 flex-1 flex flex-col overflow-hidden relative">
+			            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-teal-50 to-transparent rounded-bl-full opacity-50 pointer-events-none"></div>
+			            
+			            <h3 class="font-black text-lg text-slate-800 mb-4 flex items-center justify-between relative z-10">
+			                Thành viên 
+			                <span class="text-xs bg-teal-100 text-teal-700 px-2.5 py-1 rounded-full shadow-sm" th:text="${members.size()}">0</span>
+			            </h3>
+			            
+			            <div class="flex-1 overflow-y-auto custom-scroll pr-2 relative z-10">
+			                <div th:each="m : ${members}" class="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-2xl group relative transition-all border border-transparent hover:border-slate-100 hover:shadow-sm mb-1">
+			                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-100 to-emerald-100 text-teal-700 flex items-center justify-center font-black text-sm uppercase shadow-sm border border-white" th:text="${#strings.substring(m.name,0,1)}">U</div>
+			                    <span class="text-sm font-bold text-slate-700" th:text="${m.name}">Tên</span>
+			                    <div class="ml-auto opacity-0 group-hover:opacity-100 flex gap-1 bg-white p-1 rounded-lg shadow-sm">
+			                        <button onclick="openEditMemberModal(this)" class="text-slate-400 hover:text-teal-600 p-1 transition-colors"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+			                        <form th:action="@{/group/{gid}/delete-member/{mid}(gid=${group.id}, mid=${m.id})}" method="post" onsubmit="return confirm('Xóa thành viên này?')">
+			                            <button class="text-slate-400 hover:text-rose-500 p-1 transition-colors"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+			                        </form>
+			                    </div>
+			                </div>
+			            </div>
+			            
+			            <form th:action="@{/group/{id}/add-member(id=${group.id})}" method="post" class="mt-4 pt-4 border-t border-slate-100 relative flex items-center z-10">
+			                <input name="memberName" required 
+			                       class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-4 pr-12 text-sm font-medium focus:bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all shadow-inner" 
+			                       placeholder="Nhập tên người mới..." type="text"/>
+			                <button type="submit" class="absolute right-2 w-8 h-8 bg-teal-500 hover:bg-teal-600 text-white rounded-lg flex items-center justify-center shadow-md transition-transform active:scale-95">
+			                    <span class="material-symbols-outlined text-[20px]">add</span>
+			                </button>
+			            </form>
+			        </div>
+			    </section>
 				<!-- Phần ở giữa hiển thị các hóa đơn chi tiêu của nhóm -->
-                <section class="xl:col-span-6 bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col h-[calc(100vh-180px)] overflow-hidden">
-                    <div class="p-5 border-b border-slate-50 flex justify-between items-center">
-                        <h3 class="font-black text-lg text-slate-800">Lịch sử chi tiêu</h3>
-                        <div class="text-xs text-slate-400" th:text="'Tổng cộng: ' + ${expenses.size()} + ' hóa đơn'"></div>
-                    </div>
-                    <div class="flex-1 overflow-y-auto custom-scroll p-5 space-y-4">
-						<div th:each="exp : ${expenses}" 
-						     class="flex items-center gap-4 p-4 border border-slate-100 rounded-2xl hover:border-teal-200 hover:shadow-md transition-all bg-white group cursor-pointer"
-						     th:data-id="${exp.id}"
-						     th:data-desc="${exp.description}"
-						     th:data-amount="${exp.amount}"
-						     th:data-payer="${exp.payer.name}"
-						     th:data-sharer="${exp.sharerIds}"
-						     th:data-date="${#temporals.format(exp.createAt, 'dd/MM/yyyy HH:mm')}"
-						     th:data-img="${exp.invoiceImage}"
-						     onclick="viewExpenseDetail(this)">
-						    
-						    <div class="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 group-hover:bg-teal-50 transition-colors">
-						        <span class="material-symbols-outlined text-slate-400 group-hover:text-teal-600">receipt</span>
-						    </div>
-						    <div class="flex-1">
-						        <h4 class="font-bold text-slate-800" th:text="${exp.description}">Nội dung</h4>
-						        <p class="text-xs text-slate-400">
-						            <span class="text-teal-600 font-bold" th:text="${exp.payer.name}"></span> 
-						            trả lúc  <span th:text="${#temporals.format(exp.createAt, 'HH:mm dd/MM')}"></span>					           
-						        </p>
-						    </div>
-						    <div class="text-right">
-						        <p class="font-black text-slate-900" th:text="${#numbers.formatDecimal(exp.amount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></p>
-						        <span class="text-[10px] text-slate-400 uppercase font-bold">Chi tiết ></span>
-						    </div>
-						</div>
-                    </div>
-                </section>
+                <section class="xl:col-span-6 bg-white rounded-3xl shadow-2xl shadow-slate-300/70 border border-slate-100 flex flex-col h-[calc(100vh-180px)] overflow-hidden">
+			        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+			            <div class="flex items-center gap-3">
+			                <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center shadow-inner">
+			                    <span class="material-symbols-outlined">receipt_long</span>
+			                </div>
+			                <h3 class="font-black text-xl text-slate-800">Lịch sử chi tiêu</h3>
+			            </div>
+			            <div class="text-xs font-bold text-slate-500 bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-100" th:text="'Tổng: ' + ${expenses.size()} + ' hóa đơn'"></div>
+			        </div>
+			        
+			        <div class="flex-1 overflow-y-auto custom-scroll p-6 space-y-4 bg-slate-50/30">
+			            <div th:each="exp : ${expenses}" 
+			                 class="flex items-center gap-4 p-4 border border-slate-100 rounded-2xl hover:border-teal-300 hover:shadow-lg hover:shadow-teal-100/50 transition-all bg-white group cursor-pointer"
+			                 onclick="viewExpenseDetail(this)">
+			                
+			                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shrink-0 group-hover:from-teal-100 group-hover:to-emerald-100 transition-all shadow-sm">
+			                    <span class="material-symbols-outlined text-slate-500 group-hover:text-teal-600">receipt</span>
+			                </div>
+			                
+			                <div class="flex-1">
+			                    <h4 class="font-bold text-slate-800 text-lg mb-1 group-hover:text-teal-700 transition-colors" th:text="${exp.description}">Nội dung</h4>
+			                    <p class="text-xs text-slate-500 flex items-center gap-1">
+			                        <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+			                        <span class="text-slate-700 font-bold" th:text="${exp.payer.name}"></span> 
+			                        <span class="text-slate-400">đã trả lúc</span> 
+			                        <span class="font-medium text-slate-400" th:text="${#temporals.format(exp.createAt, 'HH:mm dd/MM')}"></span>
+			                    </p>
+			                </div>
+			                
+			                <div class="text-right flex flex-col justify-center">
+			                    <p class="font-black text-slate-900 text-lg" th:text="${#numbers.formatDecimal(exp.amount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></p>
+			                    <span class="text-[10px] text-teal-600 opacity-0 group-hover:opacity-100 uppercase font-black tracking-wider transition-opacity mt-1">Chi tiết &rarr;</span>
+			                </div>
+			            </div>
+			        </div>
+			    </section>
 				<!-- Phần bên phải hiển thị tổng chi cho chuyến đi đó và nợ mà các thành viên phải chả -->
                 <section class="xl:col-span-3 flex flex-col gap-6 h-[calc(100vh-180px)]">
-                    <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl text-white shadow-xl relative overflow-hidden">
-                        <div class="relative z-10">
-                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Tổng chi chuyến đi</p>
-                            <h2 class="text-3xl font-black mb-4">
-                                <span th:text="${#numbers.formatDecimal(#aggregates.sum(expenses.![amount]) ?: 0, 0, 'COMMA', 0, 'POINT')}">0</span><span class="text-sm ml-1">đ</span>
-                            </h2>
-                            <div class="flex items-center gap-2 text-xs text-teal-400 font-bold">
-                                <span class="material-symbols-outlined text-sm">trending_up</span>
-                                <span>Tính toán tự động bởi BeFair</span>
-                            </div>
-                        </div>
-                        <div class="absolute -right-4 -bottom-4 text-white/5 transform -rotate-12">
-                            <span class="material-symbols-outlined text-9xl">payments</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex-1 flex flex-col overflow-hidden">
-                        <h3 class="font-bold text-slate-800 mb-4">Số tiền cần trả</h3>
-                        <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-3">
-                            <div th:each="entry : ${balances}" class="p-3 rounded-xl bg-slate-50 flex justify-between items-center">
-                                <span class="text-xs font-medium" th:text="${entry.key}">Tên</span>
-                                <span th:class="${entry.value >= 0 ? 'text-teal-600 font-bold text-xs' : 'text-red-500 font-bold text-xs'}"
-                                      th:text="${(entry.value > 0 ? '+' : '') + #numbers.formatDecimal(entry.value, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+			        <div class="bg-gradient-to-br from-teal-600 to-emerald-800 p-6 rounded-3xl text-white shadow-xl shadow-teal-500/30 relative overflow-hidden shrink-0">
+			            <div class="relative z-10">
+			                <p class="text-teal-100 text-xs font-bold uppercase tracking-widest mb-1 opacity-90">Tổng chi chuyến đi</p>
+			                <h2 class="text-4xl font-black mb-4 flex items-baseline gap-1">
+			                    <span th:text="${#numbers.formatDecimal(#aggregates.sum(expenses.![amount]) ?: 0, 0, 'COMMA', 0, 'POINT')}">0</span>
+			                    <span class="text-sm font-medium opacity-80">VNĐ</span>
+			                </h2>
+			                <div class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-bold border border-white/20">
+			                    <span class="relative flex h-2 w-2">
+			                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-200 opacity-75"></span>
+			                        <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+			                    </span>
+			                    TỰ ĐỘNG CẬP NHẬT
+			                </div>
+			            </div>
+			            <span class="material-symbols-outlined absolute -right-4 -bottom-8 text-[140px] text-white/10 rotate-12 pointer-events-none">account_balance_wallet</span>
+			        </div>
+			        
+			        <div class="bg-white p-5 rounded-3xl shadow-2xl shadow-slate-300/70 border border-slate-100 flex-1 flex flex-col overflow-hidden relative">
+			            <h3 class="font-black text-lg text-slate-800 mb-4 flex items-center gap-2 relative z-10">
+			                <span class="material-symbols-outlined text-rose-500">payments</span>
+			                Cần thanh toán
+			            </h3>
+			            <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-3 relative z-10">
+			                <div th:each="entry : ${balances}" class="p-4 rounded-2xl border transition-all hover:shadow-md"
+			                     th:classappend="${entry.value >= 0 ? 'bg-emerald-50/50 border-emerald-100/50' : 'bg-rose-50/50 border-rose-100/50'}">
+			                    <div class="flex justify-between items-center">
+			                        <span class="text-sm font-bold text-slate-700" th:text="${entry.key}">Tên</span>
+			                        <div class="text-right">
+			                            <span th:class="${entry.value >= 0 ? 'text-emerald-600 font-black' : 'text-rose-500 font-black'}"
+			                                  class="text-sm block"
+			                                  th:text="${(entry.value > 0 ? '+' : '') + #numbers.formatDecimal(entry.value, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+			                            <p class="text-[10px] font-bold uppercase mt-0.5" th:class="${entry.value >= 0 ? 'text-emerald-500' : 'text-rose-400'}" 
+			                               th:text="${entry.value >= 0 ? 'Được nhận' : 'Phải trả'}"></p>
+			                        </div>
+			                    </div>
+			                </div>
+			            </div>
+			        </div>
+			    </section>
             </div>
         </main>
     </div>

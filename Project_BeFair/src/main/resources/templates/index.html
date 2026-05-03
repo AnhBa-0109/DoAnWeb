@@ -21,38 +21,39 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 
-	            <div th:each="g : ${groups}" class="group relative overflow-hidden rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all">
-	    			<div class="absolute left-0 top-0 bottom-0 w-2 bg-teal-500"></div>
-				    <div class="p-6">
-				        <div class="flex justify-between items-start mb-4">
-				            <h3 class="text-xl font-bold text-slate-900" th:text="${g.name}">Trip Name</h3>
-				            
-				            <form th:action="@{/group/delete/{id}(id=${g.id})}" method="post" 
-				                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhóm này? Toàn bộ thành viên và hóa đơn sẽ bị mất!')">
-				                <button type="submit" class="text-slate-300 hover:text-red-500 transition-colors">
-				                    <span class="material-symbols-outlined text-xl">delete</span>
-				                </button>
-				            </form>
+	            <div th:each="g : ${groups}" class="group relative rounded-3xl bg-white border border-slate-100 p-6 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+				    <div class="flex justify-between items-start mb-6">
+				        <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center group-hover:bg-teal-500 group-hover:text-white transition-all shadow-inner">
+				            <span class="material-symbols-outlined">explore</span>
 				        </div>
 				        
-				        <div class="flex items-center gap-4 text-slate-500 mb-6">
-				            <div class="flex items-center gap-1">
-				                <span class="material-symbols-outlined text-sm">groups</span>
-				                <span class="text-xs" th:text="|${g.members != null ? g.members.size() : 0} thành viên|"></span>
-				            </div>
-				            <div class="flex items-center gap-1">
-				                <span class="material-symbols-outlined text-sm">receipt_long</span>
-				                <span class="text-xs" th:text="${g.expenses != null ? g.expenses.size() : 0} + ' hóa đơn'">0 hóa đơn</span>
-				            </div>
-				        </div>
-				
-				        <div class="flex justify-between items-center">
-				            <a th:href="@{'/group/' + ${g.id}}" class="w-full flex justify-center items-center gap-2 py-3 rounded-xl bg-slate-100 hover:bg-teal-500 hover:text-white transition-colors font-bold">
-				                <span>View Details</span>
-				                <span class="material-symbols-outlined text-sm">arrow_forward</span>
-				            </a>
-				        </div>
+				        <form th:action="@{/group/delete/{id}(id=${g.id})}" method="post">
+				            <button type="submit" class="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all">
+				                <span class="material-symbols-outlined text-lg">delete_sweep</span>
+				            </button>
+				        </form>
 				    </div>
+				
+				    <h3 class="text-xl font-black text-slate-800 mb-2 group-hover:text-teal-600 transition-colors" th:text="${g.name}">Trip Name</h3>
+				    
+				    <div class="flex items-center gap-3 mb-6">
+					    <div class="flex -space-x-2">
+					        <div th:each="m, iterStat : ${g.members}" 
+					             th:if="${iterStat.index < 3}"
+					             class="w-8 h-8 rounded-full border-2 border-white bg-teal-100 flex items-center justify-center text-xs font-black text-teal-700 uppercase shadow-sm"
+					             th:text="${#strings.substring(m.name,0,1)}">A</div>
+					        
+					        <div th:if="${g.members.size() > 3}" 
+					             class="w-8 h-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-500 shadow-sm"
+					             th:text="'+' + ${g.members.size() - 3}">+</div>
+					    </div>
+					    <span class="text-xs font-bold text-slate-400" th:text="|${g.members != null ? g.members.size() : 0} thành viên|"></span>
+					</div>
+				
+				    <a th:href="@{'/group/' + ${g.id}}" class="flex items-center justify-center gap-2 py-3 w-full bg-slate-900 text-white rounded-2xl font-bold hover:bg-teal-600 transition-all shadow-lg shadow-slate-200">
+				        <span>Chi tiết</span>
+				        <span class="material-symbols-outlined text-sm">open_in_new</span>
+				    </a>
 				</div>
 
                 <div onclick="openModal()" class="border-2 border-dashed border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center group cursor-pointer hover:border-teal-500 transition-colors">

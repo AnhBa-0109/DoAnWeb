@@ -1,16 +1,18 @@
-<header th:fragment="header" class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 shadow-sm sticky top-0 w-full flex justify-between items-center px-8 h-16 z-50">
-	<div class="flex items-center gap-8">
-		<span class="text-xl font-black text-teal-600 dark:text-teal-400 tracking-tight">Be Fair! - Minh Bạch Mọi Cuộc Vui</span>
-	</div>
-	<div class="flex items-center gap-4">
-		<div class="flex px-4 py-4 border-t border-slate-100">
-		    <form th:action="@{/logout}" method="post" class="w-full">
-		        <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all group">
-		            <span class="material-symbols-outlined transition-transform group-hover:-translate-x-1">logout</span>
-		            <span class="font-bold text-sm">Đăng xuất</span>
-		        </button>
-		    </form>
-		</div>
-		<img alt="User Profile" class="w-8 h-8 rounded-full border-2 border-primary-container" data-alt="close-up portrait of a friendly professional man with a clean beard and warm expression against a neutral studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOa7uIkSnJGe0T_MD-MD9V2eIP7PD_AFQKfqAZ6tDWvb1TSoEGqId3TdUKaz8dW7YYdKkuoh_UQ5exRZOQgLcUWxfG6QCzs5Dv7qLAzsZNfVvPfBozMlYaOjojSzLQe6ZUibdNp3iTFBRJOyobdRhzbBqkg9vEZSHAT_dArP5AHlHyCD6s37AvYi_Md8XSBkd3jduFze1hnTRyKlo2HK0TWoSZLdowehN9wl-idv7GiQE7Ps65aO552sbylkuz6jJbmMieDEqxvLmk"/>
-	</div>
+<header th:fragment="header" class="bg-white/70 backdrop-blur-xl border-b border-slate-100 sticky top-0 w-full flex justify-between items-center px-8 h-20 z-50">
+    <div class="flex items-center gap-2">
+        <div class="w-10 h-10 bg-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-teal-200">
+            <span class="material-symbols-outlined text-white">balance</span>
+        </div>
+        <span class="text-2xl font-black bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent tracking-tight italic">Be Fair! - Minh Bạch Mọi Cuộc Vui</span>
+    </div>
+    
+    <div class="flex items-center gap-6">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="flex items-center gap-2 text-slate-400 hover:text-rose-500 font-bold text-sm transition-colors">
+                <span class="material-symbols-outlined">power_settings_new</span>
+                <span>Thoát</span>
+            </button>
+        </form>
+        <img alt="User Profile" class="w-8 h-8 rounded-full border-2 border-primary-container" data-alt="close-up portrait of a friendly professional man with a clean beard and warm expression against a neutral studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOa7uIkSnJGe0T_MD-MD9V2eIP7PD_AFQKfqAZ6tDWvb1TSoEGqId3TdUKaz8dW7YYdKkuoh_UQ5exRZOQgLcUWxfG6QCzs5Dv7qLAzsZNfVvPfBozMlYaOjojSzLQe6ZUibdNp3iTFBRJOyobdRhzbBqkg9vEZSHAT_dArP5AHlHyCD6s37AvYi_Md8XSBkd3jduFze1hnTRyKlo2HK0TWoSZLdowehN9wl-idv7GiQE7Ps65aO552sbylkuz6jJbmMieDEqxvLmk"/>
+    </div>
 </header>
