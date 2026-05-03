@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
 
+import jakarta.transaction.Transactional;
 import khanh.ntu.BF.Repository.ExpenseRepository;
 import khanh.ntu.BF.Repository.MemberRepository;
 import khanh.ntu.BF.Repository.TravelGroupRepository;
@@ -66,6 +67,13 @@ public class BeFairService {
     
     public void deleteExpense(Long expenseId) {
         expenseRepository.deleteById(expenseId);
+    }
+    
+    @Transactional
+    public void deleteGroup(Long groupId) {
+        if (groupRepository.existsById(groupId)) {
+            groupRepository.deleteById(groupId);
+        }
     }
     
     public void addExpense(Long groupId, String description, Double amount, Long payerId, List<Long> sharerIds, MultipartFile file) {

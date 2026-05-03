@@ -21,32 +21,39 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 
-                <div th:each="g : ${groups}" class="group relative overflow-hidden rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all">
-                    <div class="absolute left-0 top-0 bottom-0 w-2 bg-teal-500"></div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-bold text-slate-900" th:text="${g.name}">Trip Name</h3>
-                        </div>
-                        
-                        <div class="flex items-center gap-4 text-slate-500 mb-6">
-                            <div class="flex items-center gap-1">
-                                <span class="material-symbols-outlined text-sm">groups</span>
-                                <span class="text-xs" th:text="|${g.members != null ? g.members.size() : 0} thành viên|"></span>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                <span class="material-symbols-outlined text-sm">receipt_long</span>
-                                <span class="text-xs" th:text="${g.expenses.size() + ' hóa đơn'}">0 hóa đơn</span>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-between items-center">
-                            <a th:href="@{'/group/' + ${g.id}}" class="w-full flex justify-center items-center gap-2 py-3 rounded-xl bg-slate-100 hover:bg-teal-500 hover:text-white transition-colors font-bold">
-                                <span>View Details</span>
-                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+	            <div th:each="g : ${groups}" class="group relative overflow-hidden rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all">
+	    			<div class="absolute left-0 top-0 bottom-0 w-2 bg-teal-500"></div>
+				    <div class="p-6">
+				        <div class="flex justify-between items-start mb-4">
+				            <h3 class="text-xl font-bold text-slate-900" th:text="${g.name}">Trip Name</h3>
+				            
+				            <form th:action="@{/group/delete/{id}(id=${g.id})}" method="post" 
+				                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhóm này? Toàn bộ thành viên và hóa đơn sẽ bị mất!')">
+				                <button type="submit" class="text-slate-300 hover:text-red-500 transition-colors">
+				                    <span class="material-symbols-outlined text-xl">delete</span>
+				                </button>
+				            </form>
+				        </div>
+				        
+				        <div class="flex items-center gap-4 text-slate-500 mb-6">
+				            <div class="flex items-center gap-1">
+				                <span class="material-symbols-outlined text-sm">groups</span>
+				                <span class="text-xs" th:text="|${g.members != null ? g.members.size() : 0} thành viên|"></span>
+				            </div>
+				            <div class="flex items-center gap-1">
+				                <span class="material-symbols-outlined text-sm">receipt_long</span>
+				                <span class="text-xs" th:text="${g.expenses != null ? g.expenses.size() : 0} + ' hóa đơn'">0 hóa đơn</span>
+				            </div>
+				        </div>
+				
+				        <div class="flex justify-between items-center">
+				            <a th:href="@{'/group/' + ${g.id}}" class="w-full flex justify-center items-center gap-2 py-3 rounded-xl bg-slate-100 hover:bg-teal-500 hover:text-white transition-colors font-bold">
+				                <span>View Details</span>
+				                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+				            </a>
+				        </div>
+				    </div>
+				</div>
 
                 <div onclick="openModal()" class="border-2 border-dashed border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center group cursor-pointer hover:border-teal-500 transition-colors">
                     <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-4 group-hover:bg-teal-500 transition-colors">

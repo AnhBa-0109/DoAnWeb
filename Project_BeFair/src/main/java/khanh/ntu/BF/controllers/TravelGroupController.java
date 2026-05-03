@@ -68,6 +68,12 @@ public class TravelGroupController {
         return "redirect:/home";
     }
     
+    @PostMapping("/group/delete/{id}")
+    public String deleteGroup(@PathVariable Long id) {
+        bfService.deleteGroup(id);
+        return "redirect:/home";
+    }
+    
     //Thêm thành viên
     @PostMapping("/group/{id}/add-member")
     public String addMember(@PathVariable Long id, @RequestParam String memberName, RedirectAttributes redirectAttributes) {
