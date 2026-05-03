@@ -19,6 +19,18 @@ public class TravelGroup {
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     private List<Expense> expenses = new ArrayList<>();
+    
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
+
+	public User getOwner() {
+		return owner;
+	}
+
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
 
 	public TravelGroup() {
 		super();

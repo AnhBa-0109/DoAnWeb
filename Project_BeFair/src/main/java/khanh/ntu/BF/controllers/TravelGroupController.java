@@ -1,5 +1,6 @@
 package khanh.ntu.BF.controllers;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,28 +18,30 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import khanh.ntu.BF.Repository.ExpenseRepository;
 import khanh.ntu.BF.Repository.MemberRepository;
 import khanh.ntu.BF.Repository.TravelGroupRepository;
+import khanh.ntu.BF.Repository.UserRepository;
 import khanh.ntu.BF.models.Member;
 import khanh.ntu.BF.models.TravelGroup;
+import khanh.ntu.BF.models.User;
 import khanh.ntu.BF.services.BeFairService;
 
 @Controller
 public class TravelGroupController {
 	@Autowired
     private TravelGroupRepository groupRepository;
-    
-    @Autowired
-    private MemberRepository memberRepository;
-    
-    @Autowired
-    private ExpenseRepository expenseRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
     
     @Autowired
     private BeFairService bfService;
 
     //Trang danh sách nhóm
     @GetMapping("/home")
-    public String index(ModelMap model) {
-        model.addAttribute("groups", groupRepository.findAll());
+    public String index(ModelMap model, Principal principal) {
+    	String username = principal.getName();
+        
+        List<TravelGroup> userGroups = groupRepository.findByOwnerUsername(username);
+        model.addAttribute("groups", userGroups);
         return "index";
     }
 
@@ -62,9 +65,12 @@ public class TravelGroupController {
     
     //Xử lý thêm nhóm mới
     @PostMapping("/add-group")
-    public String addGroup(@ModelAttribute TravelGroup group) {
-    	if(group.getName() == null || group.getName().trim().isEmpty()) return "redirect:/home";
-    	bfService.addNewGroup(group);
+    public String addGroup(@ModelAttribute TravelGroup group, Principal principal) {
+    	String username = principal.getName();
+        User currentUser = userRepository.findByUsername(username);
+        
+        group.setOwner(currentUser);
+        bfService.addNewGroup(group);
         return "redirect:/home";
     }
     

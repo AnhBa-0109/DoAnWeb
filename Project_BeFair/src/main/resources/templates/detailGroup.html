@@ -138,9 +138,13 @@
                         <input name="description" required class="w-full bg-slate-50 border-none rounded-xl py-3 focus:ring-2 focus:ring-teal-500" placeholder="VD: Ăn lẩu trà sữa..." type="text"/>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Số tiền (VNĐ)</label>
-                        <input name="amount" required class="w-full bg-slate-50 border-none rounded-xl py-3 font-bold text-teal-600" placeholder="0" type="number"/>
-                    </div>
+					    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Số tiền (VNĐ)</label>
+					    <input id="currency-input" required 
+					           class="w-full bg-slate-50 border-none rounded-xl py-3 px-4 font-bold text-teal-600 focus:ring-2 focus:ring-teal-500 outline-none" 
+					           placeholder="0" type="text"/>
+					    
+					    <input type="hidden" name="amount" id="real-amount">
+					</div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Người chi trả</label>
                         <select name="payerId" class="w-full bg-slate-50 border-none rounded-xl py-3">
@@ -295,6 +299,18 @@
     function closeViewModal() { 
         document.getElementById('viewExpenseModal').classList.add('hidden'); 
     }
+    
+    document.getElementById('currency-input').addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\D/g, '');
+        
+        if (value !== "") {
+            e.target.value = new Intl.NumberFormat('en-US').format(value);
+        } else {
+            e.target.value = "";
+        }
+        
+        document.getElementById('real-amount').value = value;
+    });
 </script>
 </body>
 </html>
