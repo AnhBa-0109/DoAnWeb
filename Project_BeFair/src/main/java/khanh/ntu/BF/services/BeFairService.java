@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
@@ -20,9 +21,11 @@ import jakarta.transaction.Transactional;
 import khanh.ntu.BF.Repository.ExpenseRepository;
 import khanh.ntu.BF.Repository.MemberRepository;
 import khanh.ntu.BF.Repository.TravelGroupRepository;
+import khanh.ntu.BF.Repository.UserRepository;
 import khanh.ntu.BF.models.Expense;
 import khanh.ntu.BF.models.Member;
 import khanh.ntu.BF.models.TravelGroup;
+import khanh.ntu.BF.models.User;
 
 @Service
 public class BeFairService {
@@ -34,14 +37,24 @@ public class BeFairService {
     @Autowired
     private ExpenseRepository expenseRepository;
     
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserRepository userRepository;
+    
+    //hàm thêm nhóm mới
     public void addNewGroup(TravelGroup group) {
     	groupRepository.save(group);
     }
     
+    //hàm lấy thông tin nhóm theo id
     public TravelGroup getGroupById(Long id) {
     	return groupRepository.getReferenceById(id);
     }
     
+    
+    //hàm thêm thành viên mới của từng nhóm
     public void addNewMember(Long groupId, String name) {
     	TravelGroup group = groupRepository.findById(groupId).get();
         Member member = new Member();
@@ -50,12 +63,14 @@ public class BeFairService {
         memberRepository.save(member);
     }
     
+    //hàm sửa tên thành viên
     public void editMember(Long memberId, String newName) {
     	Member member = memberRepository.findById(memberId).get();
         member.setName(newName);
         memberRepository.save(member);
     }
     
+    //hàm xóa thành viên khỏi nhóm
     public void deleteMember(Long memberId) {
         Member m = memberRepository.findById(memberId).orElse(null);
         if (m != null) {
@@ -65,10 +80,13 @@ public class BeFairService {
         }
     }
     
+    //hàm xóa hóa đơn
     public void deleteExpense(Long expenseId) {
         expenseRepository.deleteById(expenseId);
     }
     
+    
+    //hàm xóa nhóm
     @Transactional
     public void deleteGroup(Long groupId) {
         if (groupRepository.existsById(groupId)) {
@@ -76,6 +94,8 @@ public class BeFairService {
         }
     }
     
+    
+    //hàm thêm hóa đơn
     public void addExpense(Long groupId, String description, Double amount, Long payerId, List<Long> sharerIds, MultipartFile file) {
         TravelGroup group = groupRepository.findById(groupId).orElseThrow();
         Member payer = memberRepository.findById(payerId).orElseThrow();
@@ -113,6 +133,7 @@ public class BeFairService {
     }
     
     
+    //hàm tính toán nợ cho từng thành viên trong nhóm
     public Map<String, Double> calculateBalances(Long groupId) {
         TravelGroup group = groupRepository.findById(groupId).get();
         Map<String, Double> balances = new HashMap<>();
@@ -148,5 +169,22 @@ public class BeFairService {
             }
         }
         return balances;
+    }
+    
+    
+    //hàm đăng kí tài khoản
+    public void registerUser(String username, String password, String fullName) throws Exception {
+        if (userRepository.findByUsername(username) != null) {
+            throw new Exception("Tên đăng nhập này đã có người dùng rồi!");
+        }
+
+        User user = new User();
+        user.setUsername(username);
+        user.setFullName(fullName);
+
+        String encodedPassword = passwordEncoder.encode(password);
+        user.setPassword(encodedPassword);
+
+        userRepository.save(user);
     }
 }
