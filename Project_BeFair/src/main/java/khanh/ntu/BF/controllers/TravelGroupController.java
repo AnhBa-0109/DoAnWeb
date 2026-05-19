@@ -51,13 +51,17 @@ public class TravelGroupController {
 
     //Trang chi tiết nhóm
     @GetMapping("/group/{id}")
-    public String detailGroup(@PathVariable Long id, ModelMap model) {
+    public String detailGroup(@PathVariable Long id, ModelMap model, Principal principal) {
+    	String username = principal.getName();
         TravelGroup group = bfService.getGroupById(id);
+        User currentUser = userRepository.findByUsername(username);
         
         List<Member> currentMembers = group.getMembers().stream()
                                            .filter(Member::isActive)
                                            .collect(Collectors.toList());
         
+        model.addAttribute("activeTab", "home");
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("group", group);
         model.addAttribute("members", currentMembers); 
         model.addAttribute("expenses", group.getExpenses());

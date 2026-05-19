@@ -1,4 +1,4 @@
-<aside th:fragment="sidebar" class="fixed left-0 top-0 hidden md:flex flex-col h-screen w-72 rounded-r-3xl bg-surface-container-lowest dark:bg-surface-container-low shadow-[30px_0px_50px_-20px_rgba(16,185,129,0.1)] z-50"> 
+<aside th:fragment="sidebar" class="fixed left-0 top-0 hidden md:flex flex-col h-screen w-60 rounded-r-3xl bg-surface-container-lowest dark:bg-surface-container-low shadow-[30px_0px_50px_-20px_rgba(16,185,129,0.1)] z-50"> 
 	<div class="flex flex-col h-full py-8">
 		<div class="px-8 mb-10 flex items-center gap-3">
 			<div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white">
@@ -16,10 +16,6 @@
 			<span class="material-symbols-outlined mr-3" data-icon="group">group</span>
 			<span class="font-label-md text-label-md">Nhóm chi tiêu</span>
 		</a>
-		<a class="text-on-surface-variant hover:bg-surface-variant rounded-2xl mx-4 my-1 flex items-center px-4 py-3 active:scale-98 transition-all" href="#">
-			<span class="material-symbols-outlined mr-3" data-icon="account_balance_wallet">account_balance_wallet</span>
-			<span class="font-label-md text-label-md">Giao dịch</span>
-		</a>
 		
 		<a class="text-on-surface-variant hover:bg-surface-variant rounded-2xl mx-4 my-1 flex items-center px-4 py-3 active:scale-98 transition-all" href="#">
 			<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
@@ -27,9 +23,9 @@
 		</a>
 	</nav>
 	<div class="px-4 mt-auto">
-		<button class="w-full bg-primary text-white py-4 px-6 rounded-2xl font-label-md text-label-md flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+		<button class="w-full bg-[rgb(6,149,133)] text-white py-4 px-6 rounded-2xl font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-[rgb(0,108,95)] shadow-lg shadow-primary/20 transition-all">
 			<span class="material-symbols-outlined" data-icon="add">add</span>
-				Thêm giao dịch mới
+				Thêm hóa đơn
 		</button>
 	</div>
 	</div>

@@ -3,21 +3,20 @@
 <head th:replace="~{fragments/head :: head}"></head>
 
 <body class="min-h-screen overflow-x-hidden">
-    
+
     <aside th:replace="~{fragments/sidebar :: sidebar}"></aside>
 
-    <main class="md:ml-72 min-h-screen px-margin-mobile md:px-margin-desktop py-3 mx-auto">
-        
-        <header th:replace="~{fragments/header :: topbar}"></header>
-
+    <main class="md:ml-60 min-h-screen px-margin-mobile md:px-margin-desktop py-3 mx-auto">
+    
+    	<header th:replace="~{fragments/header :: topbar}"></header>
         <section class="mb-12">
-            <h2 class="font-display-lg text-[48px] font-bold text-on-surface mb-2">Các nhóm của tôi</h2>
+            <h2 class="font-display-lg text-[40px] font-bold text-on-surface mb-2">Các nhóm của tôi</h2>
             <p class="font-body-lg text-[18px] text-on-surface-variant">Quản lý và theo dõi các khoản chi tiêu chung một cách minh bạch.</p>
         </section>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             
-            <div th:each="group : ${groups}" class="group relative bg-white rounded-3xl p-8 border-l-4 border-primary shadow-[0px_4px_20px_rgba(30,41,59,0.05)] hover:shadow-[0px_10px_30px_rgba(30,41,59,0.08)] transition-all duration-300 transform hover:-translate-y-1">              
+            <div th:each="group : ${groups}" class="group relative bg-white rounded-3xl p-8 border-l-4 border-b-4 border-primary shadow-[0px_4px_20px_-15px_rgba(30,41,59,0.05)] hover:shadow-[0px_20px_30px_rgba(0,0,0,0.12)] transition-all duration-300 transform hover:-translate-y-1">              
                 
                 <h3 th:text="${group.name}" class="font-headline-md text-[24px] font-semibold text-on-surface mb-4">Đà Lạt 2026</h3>
                 
@@ -38,7 +37,7 @@
                         <p th:text="|${#lists.size(group.members)} thành viên|" class="font-label-sm text-[12px] text-on-surface-variant">3 thành viên</p>
                     </div>
                     
-                    <a th:href="@{/groups/{id}(id=${group.id})}" class="flex items-center gap-1 font-label-md text-[14px] font-semibold text-primary hover:gap-2 transition-all">
+                    <a th:href="@{/group/{id}(id=${group.id})}" class="flex items-center gap-1 font-label-md text-[14px] font-semibold text-primary hover:gap-2 transition-all">
                         Chi tiết <span class="material-symbols-outlined text-sm">arrow_forward</span>
                     </a>
                 </div>
