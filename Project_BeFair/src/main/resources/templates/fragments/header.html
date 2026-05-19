@@ -1,26 +1,12 @@
-<header th:fragment="header" class="sticky top-0 w-full flex justify-between items-center px-8 h-16 bg-[#0D9488] text-white shadow-lg z-50">
-    
-    <div class="flex items-center gap-10">
-        <a th:href="@{/home}" class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-3xl">balance</span>
-            <span class="text-xl font-black tracking-tight italic">Be Fair!</span>
-        </a>
-        
-        <nav class="hidden md:flex items-center gap-6 text-sm">
-            <a th:href="@{/home}" class="text-white border-b-2 border-white pb-1 font-['Plus_Jakarta_Sans'] font-medium h-full flex items-center">Tất cả nhóm</a>
-        </nav>
+<header th:fragment="topbar" class="flex justify-between items-center mb-10">
+    <div class="md:hidden">
+        <h1 class="font-headline-md text-[24px] font-bold text-primary">Be Fair!</h1>
     </div>
-    
-    <div class="flex items-center gap-5">
-        
-        <div class="flex items-center gap-3">
-            <a th:href="@{/logout}" class="text-white/80 hover:text-white transition-colors" title="Đăng xuất">
-                <span class="material-symbols-outlined text-[22px]">logout</span>
-            </a>
-        </div>
-        
-        <div class="h-8 w-8 ml-1">
-        	<img alt="User Profile" class="w-8 h-8 rounded-full ring-2 ring-white/20" data-alt="Close up portrait of a smiling young professional man with short dark hair in a bright studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA36jntlQJ3bTPWYz_0vikjuml3mp1sRcs_H4D-kcOSDVGf7Ul5gp_S0zCk_roBeU82T42eq_3wPacMF6zw6zHvQR7i9wcMEXswl7oERRy5SRZkbJ3n2jKge9Ssg6OiqHfzhuHn66PxxCvEZtEI69D_ZWINZN_2yLRZYObI5xs10yC_EBZW8CECjdzFTWgAe5b29mfcQAe_PwNMHfg4P-olj3jLHSlPD7LUKeUJL0upgeu_TSY0lihPVmrs5eew3uNZoyg6IlF-AcJo"/>
+    <div class="hidden md:block"></div>
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 bg-white p-1 pr-4 rounded-full shadow-sm border border-outline-variant/20">
+            <img th:src="${currentUser.avatarUrl != null ? currentUser.avatarUrl : 'https://ui-avatars.com/api/?name=' + currentUser.fullName}" class="w-8 h-8 rounded-full object-cover"/>
+            <span th:text="${currentUser.fullName}" class="font-label-md text-[14px] text-on-surface"></span>
         </div>
     </div>
 </header>

@@ -40,8 +40,12 @@ public class TravelGroupController {
     public String index(ModelMap model, Principal principal) {
     	String username = principal.getName();
         
+    	User currentUser = userRepository.findByUsername(username);
+    	
         List<TravelGroup> userGroups = groupRepository.findByOwnerUsername(username);
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("groups", userGroups);
+        model.addAttribute("activeTab", "home");
         return "index";
     }
 

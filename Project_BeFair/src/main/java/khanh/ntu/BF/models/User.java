@@ -16,13 +16,17 @@ public class User {
     private String password;
 
     private String fullName;
+    
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 
-	public User(Long id, String username, String password, String fullName) {
+	public User(Long id, String username, String password, String fullName, String avatarUrl) {
 		super();
 		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.fullName = fullName;
+		this.avatarUrl = avatarUrl;
 	}
 
 	public User() {
@@ -59,6 +63,14 @@ public class User {
 
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
+	}
+
+	public String getAvatarUrl() {
+		return avatarUrl;
+	}
+
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
 	}
     
     
