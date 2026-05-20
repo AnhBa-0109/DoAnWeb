@@ -24,6 +24,10 @@ public class Member {
     @ManyToOne
     @JoinColumn(name = "group_id")
     private TravelGroup group;
+    
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = true)
+    private User user;
 
 	public Member() {
 		super();
@@ -77,5 +81,11 @@ public class Member {
 		this.leftAt = leftAt;
 	}
 
-    
+	public User getUser() {
+		return user; 
+	}
+	
+	public void setUser(User user) { 
+		this.user = user; 
+	}
 }

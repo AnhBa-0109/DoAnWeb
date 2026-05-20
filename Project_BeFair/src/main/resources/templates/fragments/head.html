@@ -156,5 +156,27 @@
 	        scrollbar-width: thin;
 	        scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
 	    }
+	    
+	    /*custom thông báo */
+	    /* Hiệu ứng trượt từ phải vào */
+		@keyframes slideInRight {
+		    from { transform: translateX(120%); opacity: 0; }
+		    to { transform: translateX(0); opacity: 1; }
+		}
+		
+		/* Hiệu ứng trượt từ trái ra ngoài */
+		@keyframes slideOutRight {
+		    from { transform: translateX(0); opacity: 1; }
+		    to { transform: translateX(120%); opacity: 0; }
+		}
+		
+		/* Class kích hoạt hiệu ứng */
+		.toast-enter {
+		    animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		}
+		
+		.toast-exit {
+		    animation: slideOutRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		}
     </style>
 </head>

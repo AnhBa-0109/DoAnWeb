@@ -133,7 +133,7 @@ public class BeFairService {
         } else {
             exp.setSharerIds(StringUtils.join(sharerIds, ","));
         }
-
+        
         expenseRepository.save(exp);
     }
     
@@ -305,5 +305,28 @@ public class BeFairService {
             }
         }
         return debtList;
+    }
+    
+    //hàm link user với member trong group
+    @Transactional
+    public void linkMemberToUser(Long memberId, String username) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thành viên!"));
+                
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new IllegalArgumentException("Tài khoản người dùng này không tồn tại trên hệ thống!");
+        }
+        
+        TravelGroup group = member.getGroup();
+        boolean alreadyLinked = group.getMembers().stream()
+                .anyMatch(m -> m.getUser() != null && m.getUser().getId().equals(user.getId()));
+                
+        if (alreadyLinked) {
+            throw new IllegalArgumentException("Người dùng này đã được liên kết với một thành viên khác trong nhóm!");
+        }
+        
+        member.setUser(user);
+        memberRepository.save(member);
     }
 }

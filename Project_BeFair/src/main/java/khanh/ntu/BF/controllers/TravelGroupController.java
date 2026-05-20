@@ -42,7 +42,7 @@ public class TravelGroupController {
         
     	User currentUser = userRepository.findByUsername(username);
     	
-        List<TravelGroup> userGroups = groupRepository.findByOwnerUsername(username);
+        List<TravelGroup> userGroups = groupRepository.findByOwnerOrMember(currentUser.getId());
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("groups", userGroups);
         model.addAttribute("activeTab", "home");
@@ -96,6 +96,7 @@ public class TravelGroupController {
     		return "redirect:/group/" + id;
     	}
     	bfService.addNewMember(id, memberName);
+    	redirectAttributes.addFlashAttribute("successMessage", "Thêm thành viên thành công!");
         return "redirect:/group/" + id;
     }
     
@@ -110,8 +111,31 @@ public class TravelGroupController {
     
     //Xóa thành viên
     @PostMapping("/group/{groupId}/delete-member/{memberId}")
-    public String deleteMember(@PathVariable Long groupId, @PathVariable Long memberId) {
-    	bfService.deleteMember(memberId);
+    public String deleteMember(@PathVariable Long groupId, @PathVariable Long memberId, RedirectAttributes redirectAttributes) {
+    	try {
+    		bfService.deleteMember(memberId);
+    		redirectAttributes.addFlashAttribute("successMessage", "Xóa thành công!");
+    	}
+    	catch(IllegalArgumentException e)
+    	{
+    		redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+    	}
+    	
     	return "redirect:/group/" + groupId;
+    }
+    
+    //link user với member
+    @PostMapping("/group/{groupId}/link-member")
+    public String linkMemberToUser(@PathVariable Long groupId, 
+                                   @RequestParam Long memberId, 
+                                   @RequestParam String username, 
+                                   RedirectAttributes redirectAttributes) {
+        try {
+            bfService.linkMemberToUser(memberId, username);
+            redirectAttributes.addFlashAttribute("successMessage", "Liên kết người dùng thành công!");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/group/" + groupId;
     }
 }
