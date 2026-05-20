@@ -402,10 +402,12 @@
 
     function openExpenseModal() {
         document.getElementById('expenseModal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
     }
     
     function closeExpenseModal() {
         document.getElementById('expenseModal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
     }
     
     function openEditMemberModal(btn) {
