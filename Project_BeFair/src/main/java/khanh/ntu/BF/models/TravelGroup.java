@@ -24,16 +24,17 @@ public class TravelGroup {
     @JoinColumn(name = "owner_id")
     private User owner;
 
-	public User getOwner() {
-		return owner;
-	}
-
-	public void setOwner(User owner) {
-		this.owner = owner;
-	}
-
 	public TravelGroup() {
 		super();
+	}
+
+	public TravelGroup(Long id, String name, List<Member> members, List<Expense> expenses, User owner) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.members = members;
+		this.expenses = expenses;
+		this.owner = owner;
 	}
 
 	public Long getId() {
@@ -68,4 +69,11 @@ public class TravelGroup {
 		this.expenses = expenses;
 	}
 	
+	public User getOwner() {
+		return owner;
+	}
+
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
 }

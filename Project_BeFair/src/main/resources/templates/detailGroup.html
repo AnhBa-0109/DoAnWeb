@@ -8,116 +8,123 @@
     
     <aside th:replace="~{fragments/sidebar :: sidebar}"></aside>
     <main class="md:ml-60 min-h-screen px-margin-mobile md:px-margin-desktop py-3 mx-auto flex flex-col">
-	    <div th:replace="~{fragments/header :: topbar}"></div>
-	    <div class="flex items-center justify-between pt-5 px-5">
-		    <a th:href="@{/home}" class="inline-flex items-center gap-2 font-black text-lg text-on-surface-variant hover:text-primary transition-all cursor-pointer w-fit group">
-				<span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
-				<span>Quay lại</span>
-			</a>
-		    <div>
-		    	<h1 class="text-4xl font-black text-slate-900" th:text="${group.name}">Tên chuyến đi</h1>
-		    </div>
-		                
-		    <div class="flex items-center gap-3">
-			    <button onclick="openMembersModal()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl font-bold shadow-sm transition-all flex items-center gap-2">
-			    	<span class="material-symbols-outlined text-teal-600">group</span> Thành viên
-			    </button>
-			    <button onclick="openExpenseModal()" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-teal-200 transition-all flex items-center gap-2">
-			    	<span class="material-symbols-outlined">add_circle</span> Thêm hóa đơn
-			    </button>
-		    </div>
+        <div th:replace="~{fragments/header :: topbar}"></div>
+        <div class="flex items-center justify-between pt-5 px-5">
+            <a th:href="@{/home}" class="inline-flex items-center gap-2 font-black text-lg text-on-surface-variant hover:text-primary transition-all cursor-pointer w-fit group">
+                <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                <span>Quay lại</span>
+            </a>
+            <div>
+                <h1 class="text-4xl font-black text-slate-900" th:text="${group.name}">Tên chuyến đi</h1>
+            </div>
+                        
+            <div class="flex items-center gap-3">
+                <button onclick="openMembersModal()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl font-bold shadow-sm transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-teal-600">group</span> Thành viên
+                </button>
+                <button onclick="openExpenseModal()" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-teal-200 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined">add_circle</span> Thêm hóa đơn
+                </button>
+            </div>
         </div>
             
-		<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 overflow-hidden py-5 px-5">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 overflow-hidden py-5 px-5">
                 
             <section class="lg:col-span-8 bg-white rounded-3xl shadow-[0_5px_10px_10px_rgba(0,0,0,0.05)] border border-slate-100 flex flex-col h-full overflow-hidden">
-				<div class="p-6 border border-slate-100 border-t-8 border-t-secondary-container flex justify-between items-center bg-slate-50/50 ">
-					<div class="flex items-center gap-3">
-						<div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center shadow-inner">
-							<span class="material-symbols-outlined">receipt_long</span>
-						</div>
-						<h3 class="font-black text-xl text-slate-800">Lịch sử chi tiêu</h3>
-					</div>
-					<div class="text-xs font-bold text-slate-500 bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-100" th:text="'Tổng: ' + ${expenses.size()} + ' hóa đơn'"></div>
-				</div>
-				        
-				<div class="flex-1 overflow-y-auto custom-scroll p-6 space-y-4 bg-slate-50/30">
-					<div th:each="exp : ${expenses}" 
-						class="flex items-center gap-4 p-4 border border-slate-100 rounded-2xl hover:border-teal-300 hover:shadow-lg hover:shadow-teal-100/50 transition-all bg-white group cursor-pointer"
-						th:data-id="${exp.id}"
-						th:data-desc="${exp.description}"
-						th:data-amount="${exp.amount}"
-						th:data-payer="${exp.payer.name}"
-						th:data-sharer="${exp.sharerIds}"
-						th:data-date="${#temporals.format(exp.createAt, 'dd/MM/yyyy HH:mm')}"
-						th:data-img="${exp.invoiceImage}"
-						onclick="viewExpenseDetail(this)">
-						                
-						<div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shrink-0 group-hover:from-teal-100 group-hover:to-emerald-100 transition-all shadow-sm">
-							<span class="material-symbols-outlined text-slate-500 group-hover:text-teal-600">receipt</span>
-						</div>
-						                
-						<div class="flex-1">
-							<h4 class="font-bold text-slate-800 text-lg mb-1 group-hover:text-teal-700 transition-colors" th:text="${exp.description}">Nội dung</h4>
-							<p class="text-xs text-slate-500 flex items-center gap-1">
-								<span class="w-2 h-2 rounded-full bg-teal-500"></span>
-								<span class="text-slate-700 font-bold" th:text="${exp.payer.name}"></span> 
-								<span class="text-slate-400">đã trả lúc</span> 
-								<span class="font-medium text-slate-400" th:text="${#temporals.format(exp.createAt, 'HH:mm dd/MM')}"></span>
-							</p>
-						</div>
-						                
-						<div class="text-right flex flex-col justify-center">
-							<p class="font-black text-slate-900 text-lg" th:text="${#numbers.formatDecimal(exp.amount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></p>
-							<span class="text-[10px] text-teal-600 opacity-0 group-hover:opacity-100 uppercase font-black tracking-wider transition-opacity mt-1">Chi tiết &rarr;</span>
-						</div>
-					</div>
-				</div>
-			</section>
+                <div class="p-6 border border-slate-100 border-t-8 border-t-secondary-container flex justify-between items-center bg-slate-50/50 ">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center shadow-inner">
+                            <span class="material-symbols-outlined">receipt_long</span>
+                        </div>
+                        <h3 class="font-black text-xl text-slate-800">Lịch sử chi tiêu</h3>
+                    </div>
+                    <div class="text-xs font-bold text-slate-500 bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-100" th:text="'Tổng: ' + ${expenses.size()} + ' hóa đơn'"></div>
+                </div>
+                        
+                <div class="flex-1 overflow-y-auto custom-scroll p-6 space-y-4 bg-slate-50/30">
+                    <div th:each="exp : ${expenses}" 
+                        class="flex items-center gap-4 p-4 border border-slate-100 rounded-2xl hover:border-teal-300 hover:shadow-lg hover:shadow-teal-100/50 transition-all bg-white group cursor-pointer"
+                        th:data-id="${exp.id}"
+                        th:data-desc="${exp.description}"
+                        th:data-amount="${exp.amount}"
+                        th:data-payer="${exp.payer.name}"
+                        th:data-sharer="${exp.sharerIds}"
+                        th:data-date="${#temporals.format(exp.createAt, 'dd/MM/yyyy HH:mm')}"
+                        th:data-img="${exp.invoiceImage}"
+                        onclick="viewExpenseDetail(this)">
+                                        
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shrink-0 group-hover:from-teal-100 group-hover:to-emerald-100 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-slate-500 group-hover:text-teal-600">receipt</span>
+                        </div>
+                                        
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-800 text-lg mb-1 group-hover:text-teal-700 transition-colors" th:text="${exp.description}">Nội dung</h4>
+                            <p class="text-xs text-slate-500 flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+                                <span class="text-slate-700 font-bold" th:text="${exp.payer.name}"></span> 
+                                <span class="text-slate-400">đã trả lúc</span> 
+                                <span class="font-medium text-slate-400" th:text="${#temporals.format(exp.createAt, 'HH:mm dd/MM')}"></span>
+                            </p>
+                        </div>
+                                        
+                        <div class="text-right flex flex-col justify-center">
+                            <p class="font-black text-slate-900 text-lg" th:text="${#numbers.formatDecimal(exp.amount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></p>
+                            <span class="text-[10px] text-teal-600 opacity-0 group-hover:opacity-100 uppercase font-black tracking-wider transition-opacity mt-1">Chi tiết &rarr;</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-			<section class="lg:col-span-4 flex flex-col gap-6 h-full"> 
+            <section class="lg:col-span-4 flex flex-col gap-6 h-full"> 
                 <div class="bg-gradient-to-br from-teal-600 to-emerald-800 p-6 rounded-3xl text-white relative overflow-hidden shrink-0 shadow-lg shadow-teal-200">
-			        <div class="relative z-10">
-			            <p class="text-teal-100 text-xs font-bold uppercase tracking-widest mb-1 opacity-90">Tổng chi chuyến đi</p>
-			            <h2 class="text-4xl font-black mb-4 flex items-baseline gap-1">
-			                <span th:text="${#numbers.formatDecimal(#aggregates.sum(expenses.![amount]) ?: 0, 0, 'COMMA', 0, 'POINT')}">0</span>
-			                <span class="text-sm font-medium opacity-80">VNĐ</span>
-			            </h2>
-			            <div class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-bold border border-white/20">
-			                <span class="relative flex h-2 w-2">
-			                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-200 opacity-75"></span>
-			                    <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-			                </span>
-			                TỰ ĐỘNG CẬP NHẬT
-			            </div>
-			        </div>
-			        <span class="material-symbols-outlined absolute -right-4 -bottom-8 text-[140px] text-white/10 rotate-12 pointer-events-none">account_balance_wallet</span>
-			    </div>
-			    
-			    <div class="bg-white p-5 rounded-3xl border border-slate-100 flex-1 flex flex-col relative shadow-[0_10px_10px_10px_rgba(0,0,0,0.04)] overflow-hidden"> <h3 class="font-black text-lg text-slate-800 mb-4 flex items-center gap-2 relative z-10">
-			            <span class="material-symbols-outlined text-rose-500">payments</span>
-			            Cần thanh toán
-			        </h3>
-			        <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-3 relative z-10">
-			            <div th:each="entry : ${balances}" class="p-4 rounded-2xl border transition-all hover:shadow-md"
-			                 th:classappend="${entry.value >= 0 ? 'bg-emerald-50/50 border-emerald-100/50' : 'bg-rose-50/50 border-rose-100/50'}">
-			                <div class="flex justify-between items-center">
-			                    <span class="text-[15px] font-bold text-slate-700" th:text="${entry.key}">Tên</span>
-			                    <div class="text-right">
-			                        <span th:class="${entry.value >= 0 ? 'text-emerald-600 font-black' : 'text-rose-500 font-black'}"
-			                              class="text-sm block"
-			                              th:text="${(entry.value > 0 ? '+' : '') + #numbers.formatDecimal(entry.value, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
-			                        <p class="text-[10px] font-bold uppercase mt-0.5" th:class="${entry.value >= 0 ? 'text-emerald-500' : 'text-rose-400'}" 
-			                           th:text="${entry.value >= 0 ? 'Được nhận' : 'Phải trả'}"></p>
-			                    </div>
-			                </div>
-			            </div>
-			        </div>
-			    </div>
-			</section>
-		</div>
-	</main>
+                    <div class="relative z-10">
+                        <p class="text-teal-100 text-xs font-bold uppercase tracking-widest mb-1 opacity-90">Tổng chi chuyến đi</p>
+                        <h2 class="text-4xl font-black mb-4 flex items-baseline gap-1">
+                            <span th:text="${#numbers.formatDecimal(#aggregates.sum(expenses.![amount]) ?: 0, 0, 'COMMA', 0, 'POINT')}">0</span>
+                            <span class="text-sm font-medium opacity-80">VNĐ</span>
+                        </h2>
+                        <div class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-bold border border-white/20">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-200 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                            </span>
+                            TỰ ĐỘNG CẬP NHẬT
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined absolute -right-4 -bottom-8 text-[140px] text-white/10 rotate-12 pointer-events-none">account_balance_wallet</span>
+                </div>
+                
+                <div class="bg-white p-5 rounded-3xl border border-slate-100 flex-1 flex flex-col relative shadow-[0_10px_10px_10px_rgba(0,0,0,0.04)] overflow-hidden"> 
+                    <input type="hidden" id="currentGroupId" th:value="${group.id}">
 
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-rose-500">payments</span>
+                            <h3 class="font-semibold text-on-surface text-[18px]">Cần thanh toán</h3>
+                        </div>
+                        <button onclick="openSettleModal()" class="text-xs font-bold text-teal-600 hover:text-teal-700 transition-colors flex items-center gap-0.5">
+                            Xem chi tiết <span class="material-symbols-outlined text-xs">open_in_new</span>
+                        </button>
+                    </div>
+                    <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-3 relative z-10">
+                        <div th:each="entry : ${balances}" class="p-4 rounded-2xl border transition-all hover:shadow-md"
+                             th:classappend="${entry.value >= 0 ? 'bg-emerald-50/50 border-emerald-100/50' : 'bg-rose-50/50 border-rose-100/50'}">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[15px] font-bold text-slate-700" th:text="${entry.key}">Tên</span>
+                                <div class="text-right">
+                                    <span th:class="${entry.value >= 0 ? 'text-emerald-600 font-black' : 'text-rose-500 font-black'}"
+                                          class="text-sm block"
+                                          th:text="${(entry.value > 0 ? '+' : '') + #numbers.formatDecimal(entry.value, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                                    <p class="text-[10px] font-bold uppercase mt-0.5" th:class="${entry.value >= 0 ? 'text-emerald-500' : 'text-rose-400'}" 
+                                       th:text="${entry.value >= 0 ? 'Được nhận' : 'Phải trả'}"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
 
     <div id="membersModal" class="hidden fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
         <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
@@ -173,7 +180,7 @@
     </div>
 
     <div id="expenseModal" class="hidden fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-        <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col">
             <div class="p-6 border-b flex justify-between items-center bg-slate-50">
                 <h3 class="text-xl font-black flex items-center gap-2"><span class="material-symbols-outlined text-teal-600">add_notes</span> Thêm hóa đơn mới</h3>
                 <button onclick="closeExpenseModal()" class="text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
@@ -185,13 +192,13 @@
                         <input name="description" required class="w-full bg-slate-50 border-none rounded-xl py-3 focus:ring-2 focus:ring-teal-500" placeholder="VD: Ăn lẩu trà sữa..." type="text"/>
                     </div>
                     <div>
-					    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Số tiền (VNĐ)</label>
-					    <input id="currency-input" required 
-					           class="w-full bg-slate-50 border-none rounded-xl py-3 px-4 font-bold text-teal-600 focus:ring-2 focus:ring-teal-500 outline-none" 
-					           placeholder="0" type="text"/>
-					    
-					    <input type="hidden" name="amount" id="real-amount">
-					</div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Số tiền (VNĐ)</label>
+                        <input id="currency-input" required 
+                               class="w-full bg-slate-50 border-none rounded-xl py-3 px-4 font-bold text-teal-600 focus:ring-2 focus:ring-teal-500 outline-none" 
+                               placeholder="0" type="text"/>
+                        
+                        <input type="hidden" name="amount" id="real-amount">
+                    </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Người chi trả</label>
                         <select name="payerId" class="w-full bg-slate-50 border-none rounded-xl py-3">
@@ -238,9 +245,9 @@
                     <span id="viewExpPayer" class="font-bold text-slate-800"></span>
                 </div>
                 <div class="flex justify-between text-sm">
-				    <span class="text-slate-400">Áp dụng cho:</span>
-				    <span id="viewExpSharers" class="font-bold text-teal-600 text-right"></span>
-				</div>
+                    <span class="text-slate-400">Áp dụng cho:</span>
+                    <span id="viewExpSharers" class="font-bold text-teal-600 text-right"></span>
+                </div>
                 <div class="space-y-2">
                     <span class="text-xs font-bold text-slate-400 uppercase">Ảnh chứng từ:</span>
                     <div id="viewExpImgContainer" class="w-full h-48 bg-slate-100 rounded-2xl overflow-hidden flex items-center justify-center border-2 border-dashed border-slate-200">
@@ -272,8 +279,119 @@
         </div>
     </div>
 
+	<div id="globalExpenseModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+	    <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+	        
+	        <div class="p-6 border-b flex justify-between items-center bg-slate-50">
+	            <h3 class="text-xl font-black flex items-center gap-2 text-slate-800">
+	                <span class="material-symbols-outlined text-[rgb(6,149,133)]">add_notes</span> Thêm hóa đơn mới
+	            </h3>
+	            <button onclick="closeGlobalExpenseModal()" class="text-slate-400 hover:text-rose-500 transition-colors">
+	                <span class="material-symbols-outlined">close</span>
+	            </button>
+	        </div>
+	        
+	        <form id="globalExpenseForm" method="post" enctype="multipart/form-data" class="p-6 space-y-5 overflow-y-auto custom-scroll">
+	            
+	            <div>
+	                <label class="block text-xs font-bold text-slate-500 uppercase mb-2 tracking-wide">Chọn chuyến đi / Nhóm chi tiêu</label>
+	                <select id="modalGroupSelect" required onchange="onGroupSelectionChange(this.value)"
+	                        class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-teal-500 outline-none transition-all">
+	                    <option value="" disabled selected>-- Chọn nhóm muốn thêm hóa đơn --</option>
+	                    <option th:each="g : ${groups}" th:value="${g.id}" th:text="${g.name}"></option>
+	                </select>
+	            </div>
+	
+	            <div id="expenseFormFields" class="space-y-5 opacity-40 pointer-events-none transition-all duration-300">
+	                
+	                <div class="grid grid-cols-2 gap-4">
+	                    <div class="col-span-2">
+	                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Hóa đơn cho việc gì?</label>
+	                        <input name="description" required class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 focus:bg-white focus:ring-2 focus:ring-teal-500 outline-none transition-all" placeholder="VD: Ăn lẩu, Tiền phòng Villa..." type="text"/>
+	                    </div>
+	                    <div>
+	                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Số tiền (VNĐ)</label>
+	                        <input id="global-currency-input" required class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-bold text-[rgb(6,149,133)] focus:bg-white focus:ring-2 focus:ring-teal-500 outline-none transition-all" placeholder="0" type="text"/>
+	                        <input type="hidden" name="amount" id="global-real-amount">
+	                    </div>
+	                    <div>
+	                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Người chi trả</label>
+	                        <select id="modalPayerSelect" name="payerId" required class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 focus:bg-white focus:ring-2 focus:ring-teal-500 outline-none transition-all">
+	                            <option value="">Chọn người trả...</option>
+	                        </select>
+	                    </div>
+	                </div>
+	
+	                <div>
+	                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Áp dụng nợ cho ai?</label>
+	                    <div id="modalSharersContainer" class="bg-slate-50 p-4 rounded-xl space-y-2 max-h-40 overflow-y-auto custom-scroll border border-slate-200">
+	                        <p class="text-xs text-slate-400 italic">Vui lòng chọn nhóm trước...</p>
+	                    </div>
+	                    <p class="text-[10px] text-slate-400 mt-2 italic">* Chỉ những người được tích mới phải gánh nợ hóa đơn này.</p>
+	                </div>
+	
+	                <div>
+	                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Ảnh hóa đơn (Nếu có)</label>
+	                    <input name="imageFile" type="file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 cursor-pointer"/>
+	                </div>
+	
+	                <button type="submit" class="w-full bg-[rgb(6,149,133)] hover:bg-[rgb(0,108,95)] text-white py-4 rounded-2xl font-black shadow-lg shadow-teal-200/50 transition-all mt-4 uppercase tracking-wide">
+	                    LƯU HÓA ĐƠN GIAO DỊCH
+	                </button>
+	            </div>
+	            
+	        </form>
+	    </div>
+	</div>
+    
+    <div id="settleModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <div>
+                    <h3 class="font-black text-xl text-slate-800 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-teal-600">account_balance_wallet</span> Quyết toán chuyến đi
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-1">Báo cáo phân phối dòng tiền và tra cứu lịch sử nợ thành viên</p>
+                </div>
+                <button onclick="closeSettleModal()" class="text-slate-400 hover:text-rose-500 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+    
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto custom-scroll">
+                
+                <div class="space-y-4">
+                    <h4 class="font-bold text-sm text-slate-800 uppercase tracking-wider flex items-center gap-1.5 border-b pb-2">
+                        <span class="material-symbols-outlined text-xs text-teal-600">sync_alt</span> Hướng dẫn chuyển khoản nhanh
+                    </h4>
+                    
+                    <div id="settleInstructionsContainer" class="space-y-3">
+                        </div>
+                    <p class="text-[10px] text-slate-400 italic">* Các giao dịch trên đã được hệ thống tự động bù trừ tối ưu để giảm thiểu số lần chuyển tiền.</p>
+                </div>
+    
+                <div class="space-y-4 border-t md:border-t-0 md:border-l md:pl-6 border-slate-100">
+                    <h4 class="font-bold text-sm text-slate-800 uppercase tracking-wider flex items-center gap-1.5 border-b pb-2">
+                        <span class="material-symbols-outlined text-xs text-teal-600">person_search</span> Sao kê nợ thành viên
+                    </h4>
+                    
+                    <div>
+                        <select id="settleMemberSelect" onchange="loadMemberDebtDetail(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 font-medium text-sm text-slate-700 outline-none focus:ring-2 focus:ring-teal-500/20">
+                            <option value="" disabled selected>-- Chọn thành viên để xem --</option>
+                            <option th:each="m : ${group.members}" th:value="${m.id}" th:text="${m.name}"></option>
+                        </select>
+                    </div>
+    
+                    <div id="memberDebtContainer" class="space-y-2.5 max-h-[40vh] overflow-y-auto pr-1 custom-scroll">
+                        <p class="text-xs text-slate-400 italic text-center py-8">Vui lòng chọn một thành viên để xem bảng phân rã hóa đơn cụ thể.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script th:inline="javascript">
-    /* CÁC HÀM XỬ LÝ MODAL MỚI */
     function openMembersModal() {
         document.getElementById('membersModal').classList.remove('hidden');
     }
@@ -282,25 +400,24 @@
         document.getElementById('membersModal').classList.add('hidden');
     }
 
-    /* Giữ nguyên các hàm JS cũ của bạn */
-	function openExpenseModal() {
-	    document.getElementById('expenseModal').classList.remove('hidden');
-	}
-	
-	function closeExpenseModal() {
-	    document.getElementById('expenseModal').classList.add('hidden');
-	}
-	
-	function openEditMemberModal(btn) {
-	    document.getElementById('editMemberId').value = btn.getAttribute('data-id');
-	    document.getElementById('editMemberName').value = btn.getAttribute('data-name');
-	    document.getElementById('editMemberModal').classList.remove('hidden');
-	}
-	
-	function closeEditModal() {
-	    document.getElementById('editMemberModal').classList.add('hidden');
-	}
-	
+    function openExpenseModal() {
+        document.getElementById('expenseModal').classList.remove('hidden');
+    }
+    
+    function closeExpenseModal() {
+        document.getElementById('expenseModal').classList.add('hidden');
+    }
+    
+    function openEditMemberModal(btn) {
+        document.getElementById('editMemberId').value = btn.getAttribute('data-id');
+        document.getElementById('editMemberName').value = btn.getAttribute('data-name');
+        document.getElementById('editMemberModal').classList.remove('hidden');
+    }
+    
+    function closeEditModal() {
+        document.getElementById('editMemberModal').classList.add('hidden');
+    }
+    
     function viewExpenseDetail(element) {
         const id = element.getAttribute('data-id');
         const desc = element.getAttribute('data-desc');
@@ -309,7 +426,7 @@
         const date = element.getAttribute('data-date');
         const img = element.getAttribute('data-img');
         const sharerIdsStr = element.getAttribute('data-sharer') || "";
-		
+        
         const allMembers = Array.from(document.querySelectorAll('[data-member-id]')).map(el => ({
             id: el.getAttribute('data-member-id'),
             name: el.getAttribute('data-member-name')
@@ -365,6 +482,165 @@
         
         document.getElementById('real-amount').value = value;
     });
+    
+    
+    //code js cho nút thêm hóa đơn ở side bar
+    function openGlobalExpenseModal() {
+        document.getElementById('globalExpenseModal').classList.remove('hidden');
+    }
+
+    function closeGlobalExpenseModal() {
+        document.getElementById('globalExpenseModal').classList.add('hidden');
+        document.getElementById('globalExpenseForm').reset();
+        onGroupSelectionChange(""); 
+    }
+
+    function onGroupSelectionChange(groupId) {
+        const formFields = document.getElementById('expenseFormFields');
+        const formAction = document.getElementById('globalExpenseForm');
+        const payerSelect = document.getElementById('modalPayerSelect');
+        const sharersContainer = document.getElementById('modalSharersContainer');
+        
+        if (!groupId) {
+            formFields.classList.add('opacity-40', 'pointer-events-none');
+            payerSelect.innerHTML = '<option value="">Chọn người trả...</option>';
+            sharersContainer.innerHTML = '<p class="text-xs text-slate-400 italic">Vui lòng chọn nhóm trước...</p>';
+            return;
+        }
+        
+        formFields.classList.remove('opacity-40', 'pointer-events-none');
+        formAction.action = `/group/${groupId}/add-expense`;
+        
+        const members = groupMembersMap[groupId] || [];
+        
+        let payerHtml = '<option value="" disabled selected>Chọn người trả...</option>';
+        members.forEach(m => {
+            payerHtml += `<option value="${m.id}">${m.name}</option>`;
+        });
+        payerSelect.innerHTML = payerHtml;
+        
+        let sharersHtml = '';
+        if (members.length === 0) {
+            sharersHtml = '<p class="text-xs text-rose-400 italic">Nhóm này chưa có thành viên nào!</p>';
+        } else {
+            members.forEach(m => {
+                sharersHtml += `
+                    <div class="flex items-center gap-3 py-1.5 px-2 hover:bg-slate-100 rounded-lg transition-colors">
+                        <input type="checkbox" name="sharerIds" value="${m.id}" checked class="rounded text-teal-600 focus:ring-teal-500 h-4 w-4 cursor-pointer">
+                        <span class="text-sm font-medium text-slate-700 select-none">${m.name}</span>
+                    </div>
+                `;
+            });
+        }
+        sharersContainer.innerHTML = sharersHtml;
+    }
+
+    document.getElementById('global-currency-input').addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value !== "") {
+            e.target.value = new Intl.NumberFormat('en-US').format(value);
+        } else {
+            e.target.value = "";
+        }
+        document.getElementById('global-real-amount').value = value;
+    });
+    
+    //code js cho chức năng sao kê số nợ của từng thành viên
+    async function openSettleModal() {
+        document.getElementById('settleModal').classList.remove('hidden');
+        
+        const groupId = document.getElementById('currentGroupId').value;
+        const container = document.getElementById('settleInstructionsContainer');
+        
+        container.innerHTML = '<p class="text-xs text-slate-400 italic py-4 text-center">Hệ thống đang bù trừ dòng tiền...</p>';
+        
+        try {
+            const response = await fetch(`/api/groups/${groupId}/settle-up`);
+            const instructions = await response.json();
+            
+            if (instructions.length === 0) {
+                container.innerHTML = '<p class="text-xs text-emerald-600 font-bold py-4 text-center">🎉 Nhóm hiện tại đã sòng phẳng, không ai nợ ai!</p>';
+                return;
+            }
+            
+            let html = '';
+            instructions.forEach(ins => {
+                html += `
+                    <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col gap-2 shadow-sm">
+                        <div class="flex items-center justify-between text-xs font-semibold">
+                            <span class="text-rose-600">${ins.fromMemberName}</span>
+                            <span class="text-slate-400 font-normal">chuyển cho</span>
+                            <span class="text-emerald-600">${ins.toMemberName}</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-1.5 border-t border-dashed border-slate-200">
+                            <span class="text-[10px] text-slate-400">Số tiền chuyển:</span>
+                            <span class="font-bold text-slate-800 text-sm">${new Intl.NumberFormat('vi-VN').format(ins.amount)} đ</span>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            
+        } catch (error) {
+            container.innerHTML = '<p class="text-xs text-rose-500 italic py-4 text-center">Gặp lỗi khi kết nối máy chủ để tính toán nợ.</p>';
+        }
+    }
+
+    function closeSettleModal() {
+        document.getElementById('settleModal').classList.add('hidden');
+        document.getElementById('settleMemberSelect').value = "";
+        document.getElementById('memberDebtContainer').innerHTML = '<p class="text-xs text-slate-400 italic text-center py-8">Vui lòng chọn một thành viên ở trên để xem bảng phân rã hóa đơn cụ thể.</p>';
+    }
+
+    async function loadMemberDebtDetail(memberId) {
+        const container = document.getElementById('memberDebtContainer');
+        const groupId = document.getElementById('currentGroupId').value;
+        
+        if (!memberId) return;
+        
+        container.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-8">Đang đồng bộ sao kê từ máy chủ...</p>';
+        
+        try {
+            const response = await fetch(`/api/groups/${groupId}/member/${memberId}/debts`);
+            const debts = await response.json();
+            
+            if (debts.length === 0) {
+                container.innerHTML = '<p class="text-xs text-emerald-600 font-medium italic text-center py-8">Thành viên này không tham gia gánh nợ hóa đơn nào!</p>';
+                return;
+            }
+
+            let html = '<div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Các khoản hóa đơn áp dụng:</div>';
+            let totalDebt = 0;
+            
+            debts.forEach(debt => {
+                totalDebt += debt.amountOwed;
+                html += `
+                    <div class="p-3 bg-white border border-slate-100 rounded-xl shadow-sm space-y-1">
+                        <div class="flex justify-between text-xs font-semibold text-slate-700">
+                            <span>${debt.expenseDescription}</span>
+                            <span class="text-rose-500">-${new Intl.NumberFormat('vi-VN').format(debt.amountOwed)} đ</span>
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-400">
+                            <span>Người đứng ra chi: <strong class="text-slate-600">${debt.payerName}</strong></span>
+                            <span>(Chia đều)</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                <div class="pt-2 mt-4 border-t border-dashed border-slate-200 flex justify-between items-center">
+                    <span class="text-xs font-bold text-slate-500">TỔNG TIỀN PHẢI GÁNH:</span>
+                    <span class="font-black text-rose-600 text-sm">-${new Intl.NumberFormat('vi-VN').format(totalDebt)} đ</span>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            
+        } catch (error) {
+            container.innerHTML = '<p class="text-xs text-rose-500 italic text-center py-8">Không thể lấy dữ liệu sao kê thành viên.</p>';
+        }
+    }
 </script>
 </body>
 </html>
