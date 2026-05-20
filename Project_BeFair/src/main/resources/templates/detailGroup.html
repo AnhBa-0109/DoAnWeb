@@ -191,10 +191,15 @@
 	                        <input type="hidden" name="memberId" th:value="${m.id}"/>
 	                        
 	                        <div class="relative flex-1">
-	                            <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-base">alternate_email</span>
-	                            <input type="text" name="username" placeholder="Nhập username hệ thống..." required 
-	                                   class="w-full bg-white border border-slate-200 rounded-xl py-1.5 pl-8 pr-3 text-xs font-medium focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all outline-none shadow-sm"/>
-	                        </div>
+							    <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-base">alternate_email</span>
+							    
+							    <input type="text" name="username" placeholder="Nhập username hoặc tên..." required autocomplete="off"
+							           oninput="handleUserSearch(this)"
+							           class="w-full bg-white border border-slate-200 rounded-xl py-1.5 pl-8 pr-3 text-xs font-medium focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all outline-none shadow-sm"/>
+							           
+							    <div class="search-suggestions hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200/80 rounded-b-md shadow-xl max-h-48 overflow-y-auto z-[90]">
+							        </div>
+							</div>
 	                        
 	                        <button type="submit" class="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-sm active:scale-95 transition-all shrink-0">
 	                            Liên kết
@@ -753,6 +758,61 @@
                 
             }, 3000);
         });
+    });
+    
+    //code js cho chức năng tìm kiếm người dùng
+    function handleUserSearch(inputElement) {
+        const keyword = inputElement.value.trim();
+        const parentDiv = inputElement.parentElement;
+        const suggestionBox = parentDiv.querySelector('.search-suggestions');
+        
+        if (!keyword) {
+            suggestionBox.innerHTML = '';
+            suggestionBox.classList.add('hidden');
+            return;
+        }
+        
+
+        fetch(`/api/groups/search-users?keyword=${encodeURIComponent(keyword)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length === 0) {
+                    suggestionBox.innerHTML = '<div class="p-3 text-[11px] text-slate-400 text-center">Không tìm thấy người dùng này</div>';
+                    suggestionBox.classList.remove('hidden');
+                    return;
+                }
+                
+                let html = '';
+                data.forEach(user => {
+                    html += `
+                        <div onclick="selectUser('${user.username}', this)" 
+                             class="flex flex-col px-3 py-2 hover:bg-slate-50 cursor-pointer transition-colors border-b border-slate-100 last:border-0">
+                            <span class="text-xs font-bold text-slate-700">${user.fullName}</span>
+                            <span class="text-[10px] text-slate-400">@${user.username}</span>
+                        </div>
+                    `;
+                });
+                suggestionBox.innerHTML = html;
+                suggestionBox.classList.remove('hidden');
+            })
+            .catch(err => console.error("Lỗi tìm kiếm tài khoản:", err));
+    }
+
+    function selectUser(username, itemElement) {
+        const parentDiv = itemElement.closest('.relative');
+        const input = parentDiv.querySelector('input[name="username"]');
+        const suggestionBox = parentDiv.querySelector('.search-suggestions');
+        
+        input.value = username;
+        
+        suggestionBox.innerHTML = '';
+        suggestionBox.classList.add('hidden');
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.search-suggestions') && !e.target.matches('input[name="username"]')) {
+            document.querySelectorAll('.search-suggestions').forEach(box => box.classList.add('hidden'));
+        }
     });
 </script>
 </body>

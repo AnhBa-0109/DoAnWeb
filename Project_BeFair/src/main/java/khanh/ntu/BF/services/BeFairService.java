@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -328,5 +329,13 @@ public class BeFairService {
         
         member.setUser(user);
         memberRepository.save(member);
+    }
+    
+    //hàm tìm kiếm người dùng
+    public List<User> searchUsersByKeyword(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        return userRepository.searchUsers(keyword, PageRequest.of(0, 5));
     }
 }
