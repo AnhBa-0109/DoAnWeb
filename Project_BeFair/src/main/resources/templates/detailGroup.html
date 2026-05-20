@@ -394,10 +394,12 @@
 <script th:inline="javascript">
     function openMembersModal() {
         document.getElementById('membersModal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
     }
     
     function closeMembersModal() {
         document.getElementById('membersModal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
     }
 
     function openExpenseModal() {
@@ -414,10 +416,12 @@
         document.getElementById('editMemberId').value = btn.getAttribute('data-id');
         document.getElementById('editMemberName').value = btn.getAttribute('data-name');
         document.getElementById('editMemberModal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
     }
     
     function closeEditModal() {
         document.getElementById('editMemberModal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
     }
     
     function viewExpenseDetail(element) {
@@ -467,10 +471,12 @@
         }
 
         document.getElementById('viewExpenseModal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
     }
 
     function closeViewModal() { 
         document.getElementById('viewExpenseModal').classList.add('hidden'); 
+        document.body.classList.remove('overflow-hidden');
     }
     
     document.getElementById('currency-input').addEventListener('input', function (e) {
@@ -550,6 +556,7 @@
     //code js cho chức năng sao kê số nợ của từng thành viên
     async function openSettleModal() {
         document.getElementById('settleModal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
         
         const groupId = document.getElementById('currentGroupId').value;
         const container = document.getElementById('settleInstructionsContainer');
@@ -589,6 +596,7 @@
     }
 
     function closeSettleModal() {
+    	document.body.classList.remove('overflow-hidden');
         document.getElementById('settleModal').classList.add('hidden');
         document.getElementById('settleMemberSelect').value = "";
         document.getElementById('memberDebtContainer').innerHTML = '<p class="text-xs text-slate-400 italic text-center py-8">Vui lòng chọn một thành viên ở trên để xem bảng phân rã hóa đơn cụ thể.</p>';
