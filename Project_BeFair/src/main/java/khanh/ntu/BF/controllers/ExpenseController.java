@@ -44,4 +44,31 @@ public class ExpenseController {
         bfService.deleteExpense(expenseId);
         return "redirect:/group/" + groupId;
     }
+    
+    //hàm sửa hóa đơn
+    @PostMapping("/group/{groupId}/edit-expense/{expenseId}")
+    public String updateExpense(@PathVariable Long groupId, 
+                                @PathVariable Long expenseId,
+                                @RequestParam String description, 
+                                @RequestParam Double amount, 
+                                @RequestParam Long payerId,
+                                @RequestParam(required = false) List<Long> sharerIds,
+                                @RequestParam("imageFile") MultipartFile file,
+                                Principal principal,
+                                RedirectAttributes redirectAttributes) {
+
+        if (!bfService.isGroupOwner(groupId, principal.getName())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Bạn không có quyền sửa!");
+            return "redirect:/group/" + groupId;
+        }
+
+        try {
+            bfService.updateExpense(expenseId, description, amount, payerId, sharerIds, file);
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật hóa đơn thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cập nhật thất bại: " + e.getMessage());
+        }
+        
+        return "redirect:/group/" + groupId;
+    }
 }

@@ -10,12 +10,15 @@ public class MemberDebtDto {
         this.amountOwed = amountOwed;
         this.payerName = payerName;
     }
+    
     public String getExpenseDescription() { 
     	return expenseDescription; 
     }
+    
     public Double getAmountOwed() { 
     	return amountOwed; 
     }
+    
     public String getPayerName() { 
     	return payerName; 
     }

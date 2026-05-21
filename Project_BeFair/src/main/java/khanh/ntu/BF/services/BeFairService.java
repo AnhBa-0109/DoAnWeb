@@ -27,6 +27,7 @@ import khanh.ntu.BF.Repository.MemberRepository;
 import khanh.ntu.BF.Repository.TravelGroupRepository;
 import khanh.ntu.BF.Repository.UserRepository;
 import khanh.ntu.BF.models.Expense;
+import khanh.ntu.BF.models.ExpenseDTO;
 import khanh.ntu.BF.models.Member;
 import khanh.ntu.BF.models.MemberDebtDto;
 import khanh.ntu.BF.models.SettleUpDto;
@@ -52,6 +53,14 @@ public class BeFairService {
     //hàm thêm nhóm mới
     public void addNewGroup(TravelGroup group) {
     	groupRepository.save(group);
+    }
+    
+    //hàm xóa nhóm
+    @Transactional
+    public void deleteGroup(Long groupId) {
+        if (groupRepository.existsById(groupId)) {
+            groupRepository.deleteById(groupId);
+        }
     }
     
     //hàm lấy thông tin nhóm theo id
@@ -86,20 +95,11 @@ public class BeFairService {
         }
     }
     
+    
     //hàm xóa hóa đơn
     public void deleteExpense(Long expenseId) {
         expenseRepository.deleteById(expenseId);
     }
-    
-    
-    //hàm xóa nhóm
-    @Transactional
-    public void deleteGroup(Long groupId) {
-        if (groupRepository.existsById(groupId)) {
-            groupRepository.deleteById(groupId);
-        }
-    }
-    
     
     //hàm thêm hóa đơn
     public void addExpense(Long groupId, String description, Double amount, Long payerId, List<Long> sharerIds, MultipartFile file) {
@@ -138,6 +138,52 @@ public class BeFairService {
         expenseRepository.save(exp);
     }
     
+    //hàm sửa hóa đơn
+    @Transactional
+    public void updateExpense(Long expenseId, String description, Double amount, Long payerId, List<Long> sharerIds, MultipartFile file) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy hóa đơn cần sửa!"));
+
+        Member payer = memberRepository.findById(payerId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thành viên thanh toán!"));
+
+        expense.setDescription(description);
+        expense.setAmount(amount);
+        expense.setPayer(payer);
+
+        if (sharerIds != null && !sharerIds.isEmpty()) {
+            String sharersStr = sharerIds.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(","));
+            expense.setSharerIds(sharersStr);
+        } else {
+            expense.setSharerIds("");
+        }
+
+        if (file != null && !file.isEmpty()) {
+            try {
+                String uploadDir = "uploads/"; 
+                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                Path uploadPath = Paths.get(uploadDir);
+                
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+                
+                Files.copy(file.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+                
+                if (expense.getInvoiceImage() != null) {
+                    Files.deleteIfExists(uploadPath.resolve(expense.getInvoiceImage()));
+                }
+                
+                expense.setInvoiceImage(fileName);
+            } catch (IOException e) {
+                throw new RuntimeException("Lỗi hệ thống khi lưu file ảnh hóa đơn mới!", e);
+            }
+        }
+
+        expenseRepository.save(expense);
+    }
     //hàm kiểm tra chủ nhóm
     public boolean isGroupOwner(Long groupId, String currentUsername) {
         Optional<TravelGroup> groupOpt = groupRepository.findById(groupId);
@@ -346,6 +392,61 @@ public class BeFairService {
         }
         return userRepository.searchUsers(keyword, PageRequest.of(0, 5));
     }
+   
     
+    public List<ExpenseDTO> getGroupExpensesForView(Long groupId) {
+        TravelGroup group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhóm!"));
+
+        List<Expense> expenses = expenseRepository.findByGroupId(groupId);
+        List<ExpenseDTO> dtoList = new ArrayList<>();
+
+        for (Expense expense : expenses) {
+            ExpenseDTO dto = new ExpenseDTO();
+            dto.setId(expense.getId());
+            dto.setDescription(expense.getDescription());
+            dto.setAmount(expense.getAmount());
+            dto.setCreateAt(expense.getCreateAt());
+            
+            if (expense.getPayer() != null) {
+                dto.setPayerId(expense.getPayer().getId());
+                dto.setPayerName(expense.getPayer().getName());
+            }
+            
+            dto.setSharerIds(expense.getSharerIds());
+            dto.setInvoiceImage(expense.getInvoiceImage());
+
+            String displayText = calculateSharersDisplayText(expense.getSharerIds(), group);
+            dto.setSharersDisplayText(displayText);
+
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
+
     
+    private String calculateSharersDisplayText(String sharerIds, TravelGroup group) {
+        if (sharerIds == null || sharerIds.trim().isEmpty()) {
+            return "Tất cả thành viên";
+        }
+        
+        List<String> selectedIds = java.util.Arrays.asList(sharerIds.split(","));
+        List<Member> allMembers = group.getMembers();
+        
+        if (allMembers == null || selectedIds.size() >= allMembers.size()) {
+            return "Tất cả thành viên";
+        }
+        
+        List<String> excludedNames = new ArrayList<>();
+        for (Member m : allMembers) {
+            if (!selectedIds.contains(String.valueOf(m.getId()))) {
+                excludedNames.add(m.getName());
+            }
+        }
+        
+        if (excludedNames.isEmpty()) {
+            return "Tất cả thành viên";
+        }
+        return "Tất cả trừ: " + String.join(", ", excludedNames);
+    }
 }

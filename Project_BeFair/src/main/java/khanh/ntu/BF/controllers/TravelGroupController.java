@@ -19,6 +19,7 @@ import khanh.ntu.BF.Repository.ExpenseRepository;
 import khanh.ntu.BF.Repository.MemberRepository;
 import khanh.ntu.BF.Repository.TravelGroupRepository;
 import khanh.ntu.BF.Repository.UserRepository;
+import khanh.ntu.BF.models.ExpenseDTO;
 import khanh.ntu.BF.models.Member;
 import khanh.ntu.BF.models.TravelGroup;
 import khanh.ntu.BF.models.User;
@@ -55,10 +56,10 @@ public class TravelGroupController {
     	String username = principal.getName();
         TravelGroup group = bfService.getGroupById(id);
         User currentUser = userRepository.findByUsername(username);
-        
         List<Member> currentMembers = group.getMembers().stream()
                                            .filter(Member::isActive)
                                            .collect(Collectors.toList());
+        List<ExpenseDTO> expenseDTOs = bfService.getGroupExpensesForView(id);
         
         model.addAttribute("activeTab", "home");
         model.addAttribute("currentUser", currentUser);
@@ -66,10 +67,10 @@ public class TravelGroupController {
         model.addAttribute("members", currentMembers); 
         model.addAttribute("expenses", group.getExpenses());
         model.addAttribute("balances", bfService.calculateBalances(id));
+        model.addAttribute("expenses", expenseDTOs);
         
         return "detailGroup";
     }
-    
     
     //Xử lý thêm nhóm mới
     @PostMapping("/add-group")
@@ -82,6 +83,7 @@ public class TravelGroupController {
         return "redirect:/home";
     }
     
+    //Xóa nhóm
     @PostMapping("/group/delete/{id}")
     public String deleteGroup(@PathVariable Long id) {
         bfService.deleteGroup(id);

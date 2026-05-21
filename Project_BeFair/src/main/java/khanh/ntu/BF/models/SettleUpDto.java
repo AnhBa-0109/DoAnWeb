@@ -10,12 +10,15 @@ public class SettleUpDto {
         this.toMemberName = toMemberName;
         this.amount = amount;
     }
+    
     public String getFromMemberName() { 
     	return fromMemberName; 
     }
+    
     public String getToMemberName() { 
     	return toMemberName; 
     }
+    
     public Double getAmount() { 
     	return amount; 
     }
