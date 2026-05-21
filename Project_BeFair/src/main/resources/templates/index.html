@@ -16,7 +16,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 		    <div th:each="group : ${groups}" 
-		         class="group relative bg-white rounded-3xl p-8 border-l-4 border-b-4 border-primary shadow-[0px_4px_20px_-15px_rgba(30,41,59,0.05)] hover:shadow-[0px_20px_30px_rgba(0,0,0,0.12)] transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full min-h-[185px]">              
+		         class="group relative bg-white rounded-3xl p-8 border-l-4 border-b-4 border-primary shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:shadow-[0px_20px_30px_rgba(0,0,0,0.12)] transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full min-h-[185px]">              
 		        
 		        <div class="hidden-member-data hidden" th:data-group-id="${group.id}">
 		            <span th:each="m : ${group.members}" th:data-id="${m.id}" th:data-name="${m.name}"></span>

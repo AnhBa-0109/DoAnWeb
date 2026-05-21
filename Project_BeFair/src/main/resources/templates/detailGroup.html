@@ -504,7 +504,7 @@
                     </h4>
                     
                     <div>
-                        <select id="settleMemberSelect" onchange="loadMemberDebtDetail(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 font-medium text-sm text-slate-700 outline-none focus:ring-2 focus:ring-teal-500/20">
+                        <select id="settleMemberSelect" onchange="loadMemberDebtDetail(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-2 px-3 font-medium text-sm text-slate-700 outline-none focus:ring-2 focus:ring-teal-500/20">
                             <option value="" disabled selected>-- Chọn thành viên để xem --</option>
                             <option th:each="m : ${group.members}" th:value="${m.id}" th:text="${m.name}"></option>
                         </select>
@@ -733,7 +733,7 @@
             let html = '';
             instructions.forEach(ins => {
                 html += `
-                    <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col gap-2 shadow-sm">
+                    <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col gap-2 shadow-[0_10px_20px_rgba(0,0,0,0.1)]">
                         <div class="flex items-center justify-between text-xs font-semibold">
                             <span class="text-rose-600">${ins.fromMemberName}</span>
                             <span class="text-slate-400 font-normal">chuyển cho</span>
@@ -798,7 +798,7 @@
 
                 html += `
                     <div onclick="openDetailFromSettle(${el.getAttribute('data-id')})" 
-                         class="p-3 bg-white border border-slate-100 rounded-xl shadow-sm space-y-1 cursor-pointer hover:border-teal-400 hover:shadow-md transition-all group/item">
+                         class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-1 cursor-pointer hover:border-teal-400 hover:shadow-md transition-all group/item">
                         <div class="flex justify-between text-xs font-semibold text-slate-700">
                             <span class="group-hover/item:text-teal-600 transition-colors">${description}</span>
                             <span class="text-rose-500">-${new Intl.NumberFormat('vi-VN').format(Math.round(amountOwed))} đ</span>
