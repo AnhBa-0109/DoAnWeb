@@ -4,12 +4,12 @@
     <div th:replace="~{fragments/head :: head}"></div>
     <title th:text="${group.name} + ' - Chi tiết'">BeFair - Dashboard</title>
 </head>
-<body class="min-h-screen overflow-x-hidden">
+<body class="h-screen overflow-x-hidden">
     
     <aside th:replace="~{fragments/sidebar :: sidebar}"></aside>
-    <main class="md:ml-60 min-h-screen px-margin-mobile md:px-margin-desktop py-3 mx-auto flex flex-col">
+    <main class="md:ml-60 h-screen px-margin-mobile md:px-margin-desktop py-3 mx-auto flex flex-col">
         <div th:replace="~{fragments/header :: topbar}"></div>
-        <div class="flex items-center justify-between pt-5 px-5">
+        <div class="flex items-center justify-between pt-1 px-5">
             <a th:href="@{/home}" class="inline-flex items-center gap-2 font-black text-lg text-on-surface-variant hover:text-primary transition-all cursor-pointer w-fit group">
                 <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
                 <span>Quay lại</span>
@@ -28,10 +28,10 @@
             </div>
         </div>
             
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 overflow-hidden py-5 px-5">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 overflow-hidden py-5 px-5 min-h-0">
                 
-            <section class="lg:col-span-8 bg-white rounded-3xl shadow-[0_5px_10px_10px_rgba(0,0,0,0.05)] border border-slate-100 flex flex-col h-full overflow-hidden">
-                <div class="p-6 border border-slate-100 border-t-8 border-t-secondary-container flex justify-between items-center bg-slate-50/50 ">
+            <section class="lg:col-span-8 bg-white rounded-3xl shadow-[0_5px_10px_10px_rgba(0,0,0,0.05)] border border-slate-100 flex flex-col h-full overflow-hidden min-h-0">
+                <div class="px-6 py-3 border-b border-b-slate-200 border-t-8 border-t-secondary-container flex justify-between items-center bg-slate-50/50 ">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center shadow-inner">
                             <span class="material-symbols-outlined">receipt_long</span>
@@ -40,12 +40,17 @@
                     </div>
                     <div class="text-xs font-bold text-slate-500 bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-100" th:text="'Tổng: ' + ${expenses.size()} + ' hóa đơn'"></div>
                 </div>
-                        
-                <div class="flex-1 overflow-y-auto custom-scroll p-6 space-y-4 bg-slate-50/30">
+                                                
+                <div class="flex-1 overflow-y-auto custom-scroll py-3 px-6 space-y-4 bg-slate-50/30">
                     <th:block th:each="exp : ${expenses}">
     
-					    <div class="flex items-center gap-4 p-4 border border-slate-100 rounded-2xl hover:border-teal-300 hover:shadow-lg hover:shadow-teal-100/50 transition-all bg-white group cursor-pointer"
-					         th:onclick="'openViewModal(' + ${exp.id} + ')'">
+					    <div class="flex items-center gap-4 p-4 border border-slate-300 rounded-2xl hover:border-teal-300 hover:shadow-lg hover:shadow-teal-100/50 transition-all bg-white group cursor-pointer"
+					         th:onclick="'openViewModal(' + ${exp.id} + ')'"
+					         th:data-id="${exp.id}"
+				             th:data-desc="${exp.description}"
+				             th:data-amount="${exp.amount}"
+				             th:data-payer="${exp.payerName}"
+				             th:data-sharer="${exp.sharerIds}">
 					         
 					        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shrink-0 group-hover:from-teal-100 group-hover:to-emerald-100 transition-all shadow-sm">
 					            <span class="material-symbols-outlined text-slate-500 group-hover:text-teal-600">receipt</span>
@@ -66,127 +71,11 @@
 					            <span class="text-[10px] text-teal-600 opacity-0 group-hover:opacity-100 uppercase font-black tracking-wider transition-opacity mt-1">Chi tiết &rarr;</span>
 					        </div>
 					    </div>
-					
-					    <div th:id="'viewExpenseModal-' + ${exp.id}" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-					        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
-					            
-					            <div class="p-6 bg-slate-50 border-b flex justify-between items-center">
-					                <h3 class="font-black text-lg">Chi tiết giao dịch</h3>
-					                <button th:onclick="'closeViewModal(' + ${exp.id} + ')'" class="text-slate-400 hover:text-slate-600">
-					                    <span class="material-symbols-outlined">close</span>
-					                </button>
-					            </div>
-					
-					            <div th:id="'mode-view-' + ${exp.id}">
-					                <div class="p-8 text-center border-b">
-					                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-2" th:text="${#temporals.format(exp.createAt, 'HH:mm dd/MM')}"></p>
-					                    <h2 class="text-2xl font-black text-slate-800 mb-1" th:text="${exp.description}"></h2>
-					                    <h1 class="text-3xl font-black text-teal-600" th:text="${#numbers.formatDecimal(exp.amount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></h1>
-					                </div>
-					                <div class="p-6 space-y-4">
-					                    <div class="flex justify-between text-sm">
-					                        <span class="text-slate-400">Người đã trả:</span>
-					                        <span class="font-bold text-slate-800" th:text="${exp.payerName}"></span>
-					                    </div>
-					                    <div class="flex justify-between text-sm">
-					                        <span class="text-slate-400">Áp dụng cho:</span>
-					                        <span class="font-bold text-teal-600 text-right" th:text="${exp.sharersDisplayText}"></span>
-					                    </div>
-					                    <div class="space-y-2">
-					                        <span class="text-xs font-bold text-slate-400 uppercase">Ảnh chứng từ:</span>
-					                        <div class="w-full h-48 bg-slate-100 rounded-2xl overflow-hidden flex items-center justify-center border-2 border-dashed border-slate-200">
-					                            <img th:if="${exp.invoiceImage != null && exp.invoiceImage != ''}" 
-					                                 th:src="@{'/uploads/' + ${exp.invoiceImage}}" class="w-full h-full object-cover">
-					                            <span th:if="${exp.invoiceImage == null || exp.invoiceImage == ''}" class="text-slate-400 text-xs italic">Không có hình ảnh</span>
-					                        </div>
-					                    </div>
-					                    
-					                    <div class="flex gap-3 pt-4">
-					                        <button type="button" th:onclick="'switchModalMode(' + ${exp.id} + ', \'edit\')'" 
-					                                class="flex-1 py-3 bg-teal-50 hover:bg-teal-100 text-teal-700 font-bold rounded-2xl transition-all text-center text-sm flex items-center justify-center gap-2">
-					                            <span class="material-symbols-outlined text-base">edit</span> Sửa hóa đơn
-					                        </button>
-					                        
-					                        <form th:action="@{/group/{groupId}/delete-expense/{expenseId}(groupId=${group.id}, expenseId=${exp.id})}" method="POST" class="flex-1">
-					                            <button type="submit" onclick="return confirm('Bạn chắc chắn muốn xóa hóa đơn này chứ?')"
-					                                    class="w-full py-3 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded-2xl transition-all text-center text-sm flex items-center justify-center gap-2">
-					                                <span class="material-symbols-outlined text-base">delete</span> Xóa
-					                            </button>
-					                        </form>
-					                    </div>
-					                </div>
-					            </div>
-					
-					            <div th:id="'mode-edit-' + ${exp.id}" class="hidden">
-					                <form th:action="@{/group/{groupId}/edit-expense/{expenseId}(groupId=${group.id}, expenseId=${exp.id})}" 
-					                      method="POST" enctype="multipart/form-data" class="p-6 space-y-4 text-left">
-					                    
-					                    <div>
-					                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Nội dung chi tiêu:</label>
-					                        <input type="text" name="description" th:value="${exp.description}" required
-					                               class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-teal-500 transition-all font-medium text-slate-800">
-					                    </div>
-					
-					                    <div>
-										    <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Số tiền (VND):</label>
-										    
-										    <input type="text" required th:value="${#numbers.formatDecimal(exp.amount, 0, 'COMMA', 0, 'POINT')}"
-										           oninput="formatCurrency(this)"
-										           class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-teal-500 transition-all font-bold text-teal-600">
-										    
-										    <input type="hidden" name="amount" th:value="${exp.amount}">
-										</div>
-					
-					                    <div>
-					                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Người trả tiền:</label>
-					                        <select name="payerId" required
-					                                class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-teal-500 transition-all font-medium text-slate-800 bg-white">
-					                            <option th:each="member : ${group.members}" 
-					                                    th:value="${member.id}" 
-					                                    th:text="${member.name}"
-					                                    th:selected="${exp.payerId != null && member.id == exp.payerId}"></option>
-					                        </select>
-					                    </div>
-					
-					                    <div>
-					                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Thành viên cùng chia tiền:</label>
-					                        <div class="border border-slate-200 rounded-2xl p-3 bg-slate-50/50 max-h-32 overflow-y-auto space-y-2">
-					                            <div th:each="member : ${group.members}" class="flex items-center gap-2">
-					                                <input class="w-4 h-4 rounded text-teal-600 focus:ring-teal-500 border-slate-300" type="checkbox" name="sharerIds" 
-					                                       th:value="${member.id}" 
-					                                       th:id="'sharer-' + ${exp.id} + '-' + ${member.id}"
-					                                       th:checked="${exp.sharerIds != null && #strings.contains(',' + exp.sharerIds + ',', ',' + member.id + ',')}">
-					                                <label class="text-xs font-bold text-slate-600 cursor-pointer" th:for="'sharer-' + ${exp.id} + '-' + ${member.id}" th:text="${member.name}"></label>
-					                            </div>
-					                        </div>
-					                    </div>
-					
-					                    <div>
-					                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Thay đổi chứng từ ảnh:</label>
-					                        <input type="file" name="imageFile" accept="image/*"
-					                               class="w-full border border-slate-200 rounded-xl text-xs bg-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 transition-all">
-					                    </div>
-					
-					                    <div class="flex gap-3 pt-2">
-					                        <button type="button" th:onclick="'switchModalMode(' + ${exp.id} + ', \'view\')'" 
-					                                class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-2xl transition-all text-center text-sm">
-					                            Quay lại xem
-					                        </button>
-					                        <button type="submit" 
-					                                class="flex-1 py-3 bg-gradient-to-r from-teal-500 to-emerald-500 hover:opacity-90 text-white font-black rounded-2xl transition-all text-center text-sm shadow-md shadow-teal-100">
-					                            Lưu thay đổi
-					                        </button>
-					                    </div>
-					                </form>
-					            </div>
-					
-					        </div>
-					    </div>
 					</th:block>
                 </div>
             </section>
 
-            <section class="lg:col-span-4 flex flex-col gap-6 h-full"> 
+            <section class="lg:col-span-4 flex flex-col gap-6 h-full min-h-0"> 
                 <div class="bg-gradient-to-br from-teal-600 to-emerald-800 p-6 rounded-3xl text-white relative overflow-hidden shrink-0 shadow-lg shadow-teal-200">
                     <div class="relative z-10">
                         <p class="text-teal-100 text-xs font-bold uppercase tracking-widest mb-1 opacity-90">Tổng chi chuyến đi</p>
@@ -205,7 +94,7 @@
                     <span class="material-symbols-outlined absolute -right-4 -bottom-8 text-[140px] text-white/10 rotate-12 pointer-events-none">account_balance_wallet</span>
                 </div>
                 
-                <div class="bg-white p-5 rounded-3xl border border-slate-100 flex-1 flex flex-col relative shadow-[0_10px_10px_10px_rgba(0,0,0,0.04)] overflow-hidden"> 
+                <div class="bg-white p-5 rounded-3xl border border-slate-100 flex-1 flex flex-col relative shadow-[0_10px_10px_10px_rgba(0,0,0,0.04)] overflow-hidden min-h-0"> 
                     <input type="hidden" id="currentGroupId" th:value="${group.id}">
 
                     <div class="flex items-center justify-between mb-4">
@@ -384,7 +273,122 @@
             </form>
         </div>
     </div>
+	
+	<th:block th:each="exp : ${expenses}">
+        <div th:id="'viewExpenseModal-' + ${exp.id}" class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+            <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
+                
+                <div class="p-6 bg-slate-50 border-b flex justify-between items-center">
+                    <h3 class="font-black text-lg">Chi tiết giao dịch</h3>
+                    <button th:onclick="'closeViewModal(' + ${exp.id} + ')'" class="text-slate-400 hover:text-slate-600">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
 
+                <div th:id="'mode-view-' + ${exp.id}">
+                    <div class="p-8 text-center border-b">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2" th:text="${#temporals.format(exp.createAt, 'HH:mm dd/MM')}"></p>
+                        <h2 class="text-2xl font-black text-slate-800 mb-1" th:text="${exp.description}"></h2>
+                        <h1 class="text-3xl font-black text-teal-600" th:text="${#numbers.formatDecimal(exp.amount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></h1>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Người đã trả:</span>
+                            <span class="font-bold text-slate-800" th:text="${exp.payerName}"></span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Áp dụng cho:</span>
+                            <span class="font-bold text-teal-600 text-right" th:text="${exp.sharersDisplayText}"></span>
+                        </div>
+                        <div class="space-y-2">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Ảnh chứng từ:</span>
+                            <div class="w-full h-48 bg-slate-100 rounded-2xl overflow-hidden flex items-center justify-center border-2 border-dashed border-slate-200">
+                                <img th:if="${exp.invoiceImage != null && exp.invoiceImage != ''}" 
+                                     th:src="@{'/uploads/' + ${exp.invoiceImage}}" class="w-full h-full object-cover">
+                                <span th:if="${exp.invoiceImage == null || exp.invoiceImage == ''}" class="text-slate-400 text-xs italic">Không có hình ảnh</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3 pt-4">
+                            <button type="button" th:onclick="'switchModalMode(' + ${exp.id} + ', \'edit\')'" 
+                                    class="flex-1 py-3 bg-teal-50 hover:bg-teal-100 text-teal-700 font-bold rounded-2xl transition-all text-center text-sm flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-base">edit</span> Sửa hóa đơn
+                            </button>
+                            
+                            <form th:action="@{/group/{groupId}/delete-expense/{expenseId}(groupId=${group.id}, expenseId=${exp.id})}" method="POST" class="flex-1">
+                                <button type="submit" onclick="return confirm('Bạn chắc chắn muốn xóa hóa đơn này chứ?')"
+                                        class="w-full py-3 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded-2xl transition-all text-center text-sm flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-base">delete</span> Xóa
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:id="'mode-edit-' + ${exp.id}" class="hidden">
+                    <form th:action="@{/group/{groupId}/edit-expense/{expenseId}(groupId=${group.id}, expenseId=${exp.id})}" 
+                          method="POST" enctype="multipart/form-data" class="p-6 space-y-4 text-left">
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Nội dung chi tiêu:</label>
+                            <input type="text" name="description" th:value="${exp.description}" required
+                                   class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-teal-500 transition-all font-medium text-slate-800">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Số tiền (VND):</label>
+                            <input type="text" required th:value="${#numbers.formatDecimal(exp.amount, 0, 'COMMA', 0, 'POINT')}"
+                                   oninput="formatCurrency(this)"
+                                   class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-teal-500 transition-all font-bold text-teal-600">
+                            <input type="hidden" name="amount" th:value="${exp.amount}">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Người trả tiền:</label>
+                            <select name="payerId" required
+                                    class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-teal-500 transition-all font-medium text-slate-800 bg-white">
+                                <option th:each="member : ${group.members}" 
+                                        th:value="${member.id}" 
+                                        th:text="${member.name}"
+                                        th:selected="${exp.payerId != null && member.id == exp.payerId}"></option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Thành viên cùng chia tiền:</label>
+                            <div class="border border-slate-200 rounded-2xl p-3 bg-slate-50/50 max-h-32 overflow-y-auto space-y-2">
+                                <div th:each="member : ${group.members}" class="flex items-center gap-2">
+                                    <input class="w-4 h-4 rounded text-teal-600 focus:ring-teal-500 border-slate-300" type="checkbox" name="sharerIds" 
+                                           th:value="${member.id}" 
+                                           th:id="'sharer-' + ${exp.id} + '-' + ${member.id}"
+                                           th:checked="${exp.sharerIds != null && #strings.contains(',' + exp.sharerIds + ',', ',' + member.id + ',')}">
+                                    <label class="text-xs font-bold text-slate-600 cursor-pointer" th:for="'sharer-' + ${exp.id} + '-' + ${member.id}" th:text="${member.name}"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Thay đổi chứng từ ảnh:</label>
+                            <input type="file" name="imageFile" accept="image/*"
+                                   class="w-full border border-slate-200 rounded-xl text-xs bg-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 transition-all">
+                        </div>
+
+                        <div class="flex gap-3 pt-2">
+                            <button type="button" th:onclick="'switchModalMode(' + ${exp.id} + ', \'view\')'" 
+                                    class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-2xl transition-all text-center text-sm">
+                                Quay lại xem
+                            </button>
+                            <button type="submit" 
+                                    class="flex-1 py-3 bg-gradient-to-r from-teal-500 to-emerald-500 hover:opacity-90 text-white font-black rounded-2xl transition-all text-center text-sm shadow-md shadow-teal-100">
+                                Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </th:block>
+	
 	<!-- form sửa tên thành viên trong group -->
     <div id="editMemberModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
         <div class="bg-white p-6 rounded-2xl w-full max-w-sm shadow-2xl">
@@ -506,7 +510,7 @@
                         </select>
                     </div>
     
-                    <div id="memberDebtContainer" class="space-y-2.5 max-h-[40vh] overflow-y-auto pr-1 custom-scroll">
+                    <div id="memberDebtContainer" class="space-y-2.5 overflow-y-auto pr-1 custom-scroll">
                         <p class="text-xs text-slate-400 italic text-center py-8">Vui lòng chọn một thành viên để xem bảng phân rã hóa đơn cụ thể.</p>
                     </div>
                 </div>
@@ -587,6 +591,8 @@
         document.body.classList.remove('overflow-hidden');
     }
     
+    let isOpenedFromSettle = false;
+    
     function openViewModal(id) {
         const modal = document.getElementById('viewExpenseModal-' + id);
         if (modal) {
@@ -602,8 +608,16 @@
         const modal = document.getElementById('viewExpenseModal-' + id);
         if (modal) {
             modal.classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
+            
+            const settleModal = document.getElementById('settleModal');
+            if (settleModal && settleModal.classList.contains('hidden')) {
+                document.body.classList.remove('overflow-hidden');
+            }
         }
+    }
+
+    function openDetailFromSettle(expenseId) {
+        openViewModal(expenseId);
     }
 
     function switchModalMode(id, mode) {
@@ -746,54 +760,71 @@
         document.getElementById('memberDebtContainer').innerHTML = '<p class="text-xs text-slate-400 italic text-center py-8">Vui lòng chọn một thành viên ở trên để xem bảng phân rã hóa đơn cụ thể.</p>';
     }
 
-    async function loadMemberDebtDetail(memberId) {
+    function loadMemberDebtDetail(memberId) {
         const container = document.getElementById('memberDebtContainer');
-        const groupId = document.getElementById('currentGroupId').value;
-        
         if (!memberId) return;
-        
-        container.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-8">Đang đồng bộ sao kê từ máy chủ...</p>';
-        
-        try {
-            const response = await fetch(`/api/groups/${groupId}/member/${memberId}/debts`);
-            const debts = await response.json();
-            
-            if (debts.length === 0) {
-                container.innerHTML = '<p class="text-xs text-emerald-600 font-medium italic text-center py-8">Thành viên này không tham gia gánh nợ hóa đơn nào!</p>';
-                return;
-            }
 
-            let html = '<div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Các khoản hóa đơn áp dụng:</div>';
-            let totalDebt = 0;
+        container.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-8">Đang đồng bộ sao kê dữ liệu...</p>';
+
+        const expenseElements = document.querySelectorAll('[data-id][data-sharer]');
+        
+        const totalGroupMembers = document.querySelectorAll('#settleMemberSelect option').length - 1;
+
+        let html = '<div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Các khoản hóa đơn áp dụng:</div>';
+        let totalDebt = 0;
+        let hasDebt = false;
+
+        expenseElements.forEach(el => {
+            const sharerIdsStr = el.getAttribute('data-sharer') || "";
+            const amount = parseFloat(el.getAttribute('data-amount') || "0");
+            const description = el.getAttribute('data-desc');
+            const payerName = el.getAttribute('data-payer');
+            const payerId = el.getAttribute('data-payer-id'); 
+
+            const sharerIds = sharerIdsStr.split(',').map(id => id.trim()).filter(id => id !== "");
+            const isAllMembers = (sharerIds.length === 0); 
             
-            debts.forEach(debt => {
-                totalDebt += debt.amountOwed;
+            if ((isAllMembers || sharerIds.includes(memberId.toString())) && payerId !== memberId.toString()) {
+                hasDebt = true;
+                
+                const totalSharersForThisExp = isAllMembers ? totalGroupMembers : sharerIds.length;
+                const amountOwed = amount / totalSharersForThisExp;
+                totalDebt += amountOwed;
+
+                let shareTypeLabel = '(Chia đều cả nhóm)';
+                if (!isAllMembers && totalSharersForThisExp < totalGroupMembers) {
+                    shareTypeLabel = `(Chia đều ${totalSharersForThisExp} người)`;
+                }
+
                 html += `
-                    <div class="p-3 bg-white border border-slate-100 rounded-xl shadow-sm space-y-1">
+                    <div onclick="openDetailFromSettle(${el.getAttribute('data-id')})" 
+                         class="p-3 bg-white border border-slate-100 rounded-xl shadow-sm space-y-1 cursor-pointer hover:border-teal-400 hover:shadow-md transition-all group/item">
                         <div class="flex justify-between text-xs font-semibold text-slate-700">
-                            <span>${debt.expenseDescription}</span>
-                            <span class="text-rose-500">-${new Intl.NumberFormat('vi-VN').format(debt.amountOwed)} đ</span>
+                            <span class="group-hover/item:text-teal-600 transition-colors">${description}</span>
+                            <span class="text-rose-500">-${new Intl.NumberFormat('vi-VN').format(Math.round(amountOwed))} đ</span>
                         </div>
                         <div class="flex justify-between text-[10px] text-slate-400">
-                            <span>Người đứng ra chi: <strong class="text-slate-600">${debt.payerName}</strong></span>
-                            <span>(Chia đều)</span>
+                            <span>Người đứng ra chi: <strong class="text-slate-600">${payerName}</strong></span>
+                            <span class="font-medium text-amber-600">${shareTypeLabel}</span>
                         </div>
                     </div>
                 `;
-            });
-            
-            html += `
-                <div class="pt-2 mt-4 border-t border-dashed border-slate-200 flex justify-between items-center">
-                    <span class="text-xs font-bold text-slate-500">TỔNG TIỀN PHẢI GÁNH:</span>
-                    <span class="font-black text-rose-600 text-sm">-${new Intl.NumberFormat('vi-VN').format(totalDebt)} đ</span>
-                </div>
-            `;
-            
-            container.innerHTML = html;
-            
-        } catch (error) {
-            container.innerHTML = '<p class="text-xs text-rose-500 italic text-center py-8">Không thể lấy dữ liệu sao kê thành viên.</p>';
+            }
+        });
+
+        if (!hasDebt) {
+            container.innerHTML = '<p class="text-xs text-emerald-600 font-medium italic text-center py-8">Thành viên này không tham gia gánh nợ hóa đơn nào!</p>';
+            return;
         }
+
+        html += `
+            <div class="pt-2 mt-4 border-t border-dashed border-slate-200 flex justify-between items-center">
+                <span class="text-xs font-bold text-slate-500">TỔNG TIỀN PHẢI GÁNH:</span>
+                <span class="font-black text-rose-600 text-sm">-${new Intl.NumberFormat('vi-VN').format(Math.round(totalDebt))} đ</span>
+            </div>
+        `;
+
+        container.innerHTML = html;
     }
     
     function toggleLinkInput(memberId) {
