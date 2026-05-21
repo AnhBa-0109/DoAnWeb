@@ -102,7 +102,15 @@ public class TravelGroupController {
     
     //Sửa tên thành viên
     @PostMapping("/group/{id}/edit-member")
-    public String editMember(@PathVariable Long id, @RequestParam Long memberId, @RequestParam String newName) {
+    public String editMember(@PathVariable Long id, @RequestParam Long memberId, @RequestParam String newName, 
+    							Principal principal,
+    							RedirectAttributes redirectAttributes) {
+    	
+    	if (!bfService.isGroupOwner(id, principal.getName())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Bạn không phải chủ nhóm, không có quyền sửa tên thành viên!");
+            return "redirect:/group/" + id;
+        }
+    	
         if (newName != null && !newName.trim().isEmpty()) {
             bfService.editMember(memberId, newName);
         }
@@ -111,7 +119,14 @@ public class TravelGroupController {
     
     //Xóa thành viên
     @PostMapping("/group/{groupId}/delete-member/{memberId}")
-    public String deleteMember(@PathVariable Long groupId, @PathVariable Long memberId, RedirectAttributes redirectAttributes) {
+    public String deleteMember(@PathVariable Long groupId, @PathVariable Long memberId, RedirectAttributes redirectAttributes,
+					    		Principal principal) {
+    	
+    	if (!bfService.isGroupOwner(groupId, principal.getName())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Bạn không phải chủ nhóm, không có quyền sửa tên thành viên!");
+            return "redirect:/group/" + groupId;
+        }
+    	
     	try {
     		bfService.deleteMember(memberId);
     		redirectAttributes.addFlashAttribute("successMessage", "Xóa thành công!");

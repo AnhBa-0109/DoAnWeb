@@ -160,7 +160,7 @@
 	                        </div>
 	                    </div>
 	                    
-	                    <div class="ml-auto opacity-0 group-hover:opacity-100 flex items-center flex-shrink-0 gap-1 bg-white p-1 rounded-lg shadow-sm transition-opacity duration-200">
+	                    <div th:if="${group.owner.username == #authentication.name}" class="ml-auto opacity-0 group-hover:opacity-100 flex items-center flex-shrink-0 gap-1 bg-white p-1 rounded-lg shadow-sm transition-opacity duration-200">
     
 						    <button th:if="${m.user == null}"
 						            type="button"

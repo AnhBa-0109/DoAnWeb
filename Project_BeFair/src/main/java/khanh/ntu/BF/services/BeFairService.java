@@ -138,6 +138,14 @@ public class BeFairService {
         expenseRepository.save(exp);
     }
     
+    //hàm kiểm tra chủ nhóm
+    public boolean isGroupOwner(Long groupId, String currentUsername) {
+        Optional<TravelGroup> groupOpt = groupRepository.findById(groupId);
+        if (groupOpt.isEmpty()) {
+            return false;
+        }
+        return groupOpt.get().getOwner().getUsername().equals(currentUsername);
+    }
     
     //hàm tính toán nợ cho từng thành viên trong nhóm
     public Map<String, Double> calculateBalances(Long groupId) {
@@ -338,4 +346,6 @@ public class BeFairService {
         }
         return userRepository.searchUsers(keyword, PageRequest.of(0, 5));
     }
+    
+    
 }
