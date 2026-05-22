@@ -29,15 +29,7 @@ public class GroupApiController {
         return ResponseEntity.ok(instructions);
     }
 
-    @GetMapping("/{groupId}/member/{memberId}/debts")
-    public ResponseEntity<List<MemberDebtDto>> getMemberDebts(@PathVariable Long groupId, @PathVariable Long memberId) {
-        List<MemberDebtDto> debts = beFairService.getMemberDebts(groupId, memberId);
-        if (debts == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(debts);
-    }
-    
+
     @GetMapping("/search-users")
     public ResponseEntity<List<Map<String, String>>> searchUsers(@RequestParam String keyword) {
         List<User> users = beFairService.searchUsersByKeyword(keyword);

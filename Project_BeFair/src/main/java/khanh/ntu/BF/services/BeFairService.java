@@ -69,7 +69,7 @@ public class BeFairService {
     }
     
     
-    //hàm thêm thành viên mới của từng nhóm
+    //hàm thêm thành viên mới
     public void addNewMember(Long groupId, String name) {
     	TravelGroup group = groupRepository.findById(groupId).get();
         Member member = new Member();
@@ -91,6 +91,7 @@ public class BeFairService {
         if (m != null) {
             m.setActive(false);
             m.setLeftAt(LocalDateTime.now());
+            m.setUser(null);
             memberRepository.save(m);
         }
     }
@@ -335,31 +336,6 @@ public class BeFairService {
         }
 
         return instructions;
-    }
-
-    public List<MemberDebtDto> getMemberDebts(Long groupId, Long memberId) {
-        Optional<TravelGroup> groupOpt = groupRepository.findById(groupId);
-        if (groupOpt.isEmpty()) return null;
-        TravelGroup group = groupOpt.get();
-
-        List<MemberDebtDto> debtList = new ArrayList<>();
-
-        for (Expense e : group.getExpenses()) {
-            if (e.getAmount() == null) continue;
-
-            List<Long> sharerIds = parseSharerIds(e.getSharerIds());
-            if (sharerIds.contains(memberId)) {
-                Double amountOwed = e.getAmount() / sharerIds.size();
-                String payerName = (e.getPayer() != null) ? e.getPayer().getName() : "Không rõ";
-
-                debtList.add(new MemberDebtDto(
-                    e.getDescription(),
-                    amountOwed,
-                    payerName
-                ));
-            }
-        }
-        return debtList;
     }
     
     //hàm link user với member trong group
