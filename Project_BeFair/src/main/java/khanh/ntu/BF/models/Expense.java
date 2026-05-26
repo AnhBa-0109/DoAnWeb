@@ -1,6 +1,8 @@
 package khanh.ntu.BF.models;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.*;
 
@@ -27,8 +29,13 @@ public class Expense {
     @JoinColumn(name = "group_id")
     private TravelGroup group;
     
-    @Column(name = "sharer_ids")
-    private String sharerIds = "";
+    @ManyToMany
+    @JoinTable(
+        name = "expense_sharers",
+        joinColumns = @JoinColumn(name = "expense_id"),
+        inverseJoinColumns = @JoinColumn(name = "member_id")
+    )
+    private List<Member> sharers = new ArrayList<>();
     
 	public Expense() {
 		super();
@@ -114,14 +121,14 @@ public class Expense {
 	}
 
 
-	public String getSharerIds() {
-		return sharerIds;
+	public List<Member> getSharers() {
+		return sharers;
 	}
 
 
-	public void setSharerIds(String sharerIds) {
-		this.sharerIds = sharerIds;
+	public void setSharers(List<Member> sharers) {
+		this.sharers = sharers;
 	}
-	
+
 	
 }

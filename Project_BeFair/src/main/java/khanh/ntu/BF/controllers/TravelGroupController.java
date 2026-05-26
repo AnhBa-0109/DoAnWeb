@@ -83,7 +83,7 @@ public class TravelGroupController {
         return "redirect:/home";
     }
     
- // Xử lý sửa tên nhóm
+    //Xử lý sửa tên nhóm
     @PostMapping("/group/edit/{id}")
     public String editGroup(@PathVariable Long id, 
                             @RequestParam String groupName,

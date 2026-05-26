@@ -8,6 +8,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,13 +96,24 @@ public class BeFairService {
     
     //hàm xóa thành viên khỏi nhóm
     public void deleteMember(Long memberId) {
-        Member m = memberRepository.findById(memberId).orElse(null);
-        if (m != null) {
-        	
+        Member m = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thành viên!"));
+
+        List<Expense> expenses = expenseRepository.findByGroupId(m.getGroup().getId());
+
+        boolean isInExpense = expenses.stream().anyMatch(e -> {
+            boolean isPayer = e.getPayer() != null && e.getPayer().getId().equals(memberId);
+            boolean isSharer = e.getSharers().stream().anyMatch(s -> s.getId().equals(memberId));
+            return isPayer || isSharer;
+        });
+
+        if (isInExpense) {
             m.setActive(false);
             m.setLeftAt(LocalDateTime.now());
             m.setUser(null);
             memberRepository.save(m);
+        } else {
+            memberRepository.delete(m);
         }
     }
     
@@ -136,13 +148,13 @@ public class BeFairService {
         }
 
         if (sharerIds == null || sharerIds.isEmpty()) {
-            List<Long> allActiveIds = group.getMembers().stream()
+            List<Member> allActiveMembers = group.getMembers().stream()
                 .filter(Member::isActive)
-                .map(Member::getId)
                 .collect(Collectors.toList());
-            exp.setSharerIds(StringUtils.join(allActiveIds, ","));
+            exp.setSharers(allActiveMembers);
         } else {
-            exp.setSharerIds(StringUtils.join(sharerIds, ","));
+            List<Member> sharers = memberRepository.findAllById(sharerIds);
+            exp.setSharers(sharers);
         }
         
         expenseRepository.save(exp);
@@ -162,30 +174,20 @@ public class BeFairService {
         expense.setPayer(payer);
 
         if (sharerIds != null && !sharerIds.isEmpty()) {
-            String sharersStr = sharerIds.stream()
-                    .map(String::valueOf)
-                    .collect(Collectors.joining(","));
-            expense.setSharerIds(sharersStr);
+            List<Member> sharers = memberRepository.findAllById(sharerIds);
+            expense.setSharers(sharers);
         } else {
-            expense.setSharerIds("");
+            expense.setSharers(new ArrayList<>());
         }
 
         if (file != null && !file.isEmpty()) {
             try {
-                String uploadDir = "uploads/"; 
+                String uploadDir = "uploads/";
                 String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
                 Path uploadPath = Paths.get(uploadDir);
-                
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-                
+                if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
                 Files.copy(file.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-                
-                if (expense.getInvoiceImage() != null) {
-                    Files.deleteIfExists(uploadPath.resolve(expense.getInvoiceImage()));
-                }
-                
+                if (expense.getInvoiceImage() != null) Files.deleteIfExists(uploadPath.resolve(expense.getInvoiceImage()));
                 expense.setInvoiceImage(fileName);
             } catch (IOException e) {
                 throw new RuntimeException("Lỗi hệ thống khi lưu file ảnh hóa đơn mới!", e);
@@ -205,37 +207,27 @@ public class BeFairService {
     
     //hàm tính toán nợ cho từng thành viên trong nhóm
     public Map<String, Double> calculateBalances(Long groupId) {
-        TravelGroup group = groupRepository.findById(groupId).get();
+        TravelGroup group = groupRepository.findById(groupId).orElseThrow();
+        List<Expense> expenses = expenseRepository.findByGroupId(groupId);
         Map<String, Double> balances = new HashMap<>();
-        
-        group.getMembers().forEach(m -> balances.put(m.getName(), 0.0));
 
-        for (Expense exp : group.getExpenses()) {
+        for (Member m : group.getMembers()) {
+            if (m.isActive()) balances.put(m.getName(), 0.0);
+        }
+
+        for (Expense exp : expenses) {
+            if (exp.getPayer() == null || exp.getSharers().isEmpty()) continue;
+
             double amount = exp.getAmount();
-            
-            String sharerIdsStr = exp.getSharerIds();
-            if (sharerIdsStr == null || sharerIdsStr.isEmpty()) {
-                continue; 
-            }
-
-            String[] ids = sharerIdsStr.split(",");
-            int numberOfSharers = ids.length;
-            if (numberOfSharers == 0) continue;
-
+            int numberOfSharers = exp.getSharers().size();
             double shareAmount = amount / numberOfSharers;
 
             String payerName = exp.getPayer().getName();
-            balances.put(payerName, balances.get(payerName) + amount);
+            balances.put(payerName, balances.getOrDefault(payerName, 0.0) + amount);
 
-            for (String idStr : ids) {
-                try {
-                    Long sId = Long.parseLong(idStr.trim());
-                    memberRepository.findById(sId).ifPresent(m -> {
-                        balances.put(m.getName(), balances.get(m.getName()) - shareAmount);
-                    });
-                } catch (NumberFormatException e) {
-                    continue;
-                }
+            for (Member sharer : exp.getSharers()) {
+                String sharerName = sharer.getName();
+                balances.put(sharerName, balances.getOrDefault(sharerName, 0.0) - shareAmount);
             }
         }
         return balances;
@@ -257,25 +249,6 @@ public class BeFairService {
 
         userRepository.save(user);
     }
-    
-    
-    private List<Long> parseSharerIds(String sharerIdsStr) {
-        List<Long> ids = new ArrayList<>();
-        if (sharerIdsStr == null || sharerIdsStr.trim().isEmpty()) {
-            return ids;
-        }
-        String[] split = sharerIdsStr.split(",");
-        for (String s : split) {
-            String trimmed = s.trim();
-            if (!trimmed.isEmpty()) {
-                try {
-                    ids.add(Long.parseLong(trimmed));
-                } catch (NumberFormatException e) {
-                }
-            }
-        }
-        return ids;
-    }
 
     public List<SettleUpDto> getSettleUpInstructions(Long groupId) {
         Optional<TravelGroup> groupOpt = groupRepository.findById(groupId);
@@ -296,15 +269,15 @@ public class BeFairService {
             Long payerId = e.getPayer().getId();
             Double amount = e.getAmount();
             
-            List<Long> sharerIds = parseSharerIds(e.getSharerIds());
-            if (sharerIds.isEmpty()) continue;
+            List<Member> sharers = e.getSharers();
+            if (sharers.isEmpty()) continue;
 
             balances.put(payerId, balances.getOrDefault(payerId, 0.0) + amount);
 
-            Double share = amount / sharerIds.size();
-            for (Long sharerId : sharerIds) {
-                if (balances.containsKey(sharerId)) {
-                    balances.put(sharerId, balances.get(sharerId) - share);
+            Double share = amount / sharers.size();
+            for (Member sharer : sharers) {
+                if (balances.containsKey(sharer.getId())) {
+                    balances.put(sharer.getId(), balances.get(sharer.getId()) - share);
                 }
             }
         }
@@ -398,10 +371,14 @@ public class BeFairService {
                 dto.setPayerName(expense.getPayer().getName());
             }
             
-            dto.setSharerIds(expense.getSharerIds());
+            // Chuyển List<Member> thành chuỗi id để dùng ở FE nếu cần
+            String sharerIdsStr = expense.getSharers().stream()
+                    .map(m -> String.valueOf(m.getId()))
+                    .collect(Collectors.joining(","));
+            dto.setSharerIds(sharerIdsStr);
             dto.setInvoiceImage(expense.getInvoiceImage());
 
-            String displayText = calculateSharersDisplayText(expense.getSharerIds(), group);
+            String displayText = calculateSharersDisplayText(expense.getSharers(), group);
             dto.setSharersDisplayText(displayText);
 
             dtoList.add(dto);
@@ -409,29 +386,28 @@ public class BeFairService {
         return dtoList;
     }
 
-    
-    private String calculateSharersDisplayText(String sharerIds, TravelGroup group) {
-        if (sharerIds == null || sharerIds.trim().isEmpty()) {
+    private String calculateSharersDisplayText(List<Member> sharers, TravelGroup group) {
+        if (sharers == null || sharers.isEmpty()) {
             return "Tất cả thành viên";
         }
-        
-        List<String> selectedIds = java.util.Arrays.asList(sharerIds.split(","));
+
         List<Member> allMembers = group.getMembers();
-        
-        if (allMembers == null || selectedIds.size() >= allMembers.size()) {
+        if (allMembers == null || sharers.size() >= allMembers.size()) {
             return "Tất cả thành viên";
         }
-        
+
+        List<String> sharerIds = sharers.stream()
+                .map(m -> String.valueOf(m.getId()))
+                .collect(Collectors.toList());
+
         List<String> excludedNames = new ArrayList<>();
         for (Member m : allMembers) {
-            if (!selectedIds.contains(String.valueOf(m.getId()))) {
+            if (!sharerIds.contains(String.valueOf(m.getId()))) {
                 excludedNames.add(m.getName());
             }
         }
-        
-        if (excludedNames.isEmpty()) {
-            return "Tất cả thành viên";
-        }
+
+        if (excludedNames.isEmpty()) return "Tất cả thành viên";
         return "Tất cả trừ: " + String.join(", ", excludedNames);
     }
 }
