@@ -83,10 +83,28 @@ public class TravelGroupController {
         return "redirect:/home";
     }
     
+ // Xử lý sửa tên nhóm
+    @PostMapping("/group/edit/{id}")
+    public String editGroup(@PathVariable Long id, 
+                            @RequestParam String groupName,
+                            Principal principal,
+                            RedirectAttributes redirectAttributes) {
+        
+        if (!bfService.isGroupOwner(id, principal.getName())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Bạn không phải chủ nhóm!");
+            return "redirect:/home";
+        }
+        
+        bfService.editGroup(id, groupName);
+        redirectAttributes.addFlashAttribute("successMessage", "Sửa tên nhóm thành công!");
+        return "redirect:/home";
+    }
+    
     //Xóa nhóm
     @PostMapping("/group/delete/{id}")
-    public String deleteGroup(@PathVariable Long id) {
+    public String deleteGroup(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         bfService.deleteGroup(id);
+        redirectAttributes.addFlashAttribute("successMessage", "Xóa nhóm thành công!");
         return "redirect:/home";
     }
     
@@ -115,7 +133,9 @@ public class TravelGroupController {
     	
         if (newName != null && !newName.trim().isEmpty()) {
             bfService.editMember(memberId, newName);
+            redirectAttributes.addFlashAttribute("successMessage", "Sửa tên thành viên thành công!");
         }
+        
         return "redirect:/group/" + id;
     }
     

@@ -26,9 +26,11 @@ public class ExpenseController {
                              @RequestParam Double amount, 
                              @RequestParam Long payerId,
                              @RequestParam(required = false) List<Long> sharerIds,
-                             @RequestParam("imageFile") MultipartFile file) {
+                             @RequestParam("imageFile") MultipartFile file,
+                             RedirectAttributes redirectAttributes) {
 
         bfService.addExpense(id, description, amount, payerId, sharerIds, file);
+        redirectAttributes.addFlashAttribute("successMessage", "Thêm hóa đơn thành công!");
         return "redirect:/group/" + id;
     }
     
@@ -40,7 +42,7 @@ public class ExpenseController {
             redirectAttributes.addFlashAttribute("errorMessage", "Bạn không phải chủ nhóm, không có quyền xóa hóa đơn!");
             return "redirect:/group/" + groupId;
         }
-    	
+    	redirectAttributes.addFlashAttribute("successMessage", "Xóa hóa đơn!");
         bfService.deleteExpense(expenseId);
         return "redirect:/group/" + groupId;
     }

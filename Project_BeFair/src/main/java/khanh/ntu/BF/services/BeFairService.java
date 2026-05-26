@@ -55,6 +55,14 @@ public class BeFairService {
     	groupRepository.save(group);
     }
     
+    //hàm sửa tên nhóm
+    public void editGroup(Long groupId, String newName) {
+        TravelGroup group = groupRepository.findById(groupId)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhóm!"));
+        group.setName(newName);
+        groupRepository.save(group);
+    }
+    
     //hàm xóa nhóm
     @Transactional
     public void deleteGroup(Long groupId) {
@@ -89,6 +97,7 @@ public class BeFairService {
     public void deleteMember(Long memberId) {
         Member m = memberRepository.findById(memberId).orElse(null);
         if (m != null) {
+        	
             m.setActive(false);
             m.setLeftAt(LocalDateTime.now());
             m.setUser(null);
