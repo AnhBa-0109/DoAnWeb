@@ -17,14 +17,14 @@ public class User {
 
     private String fullName;
     
-
-	public User(Long id, String username, String password, String fullName) {
-		super();
-		this.id = id;
-		this.username = username;
-		this.password = password;
-		this.fullName = fullName;
-	}
+    private String email;
+    
+    private String phoneNumber;
+    
+    private String bankAccount;
+    
+    private String bankCode;
+    
 
 	public User() {
 		super();
@@ -62,5 +62,37 @@ public class User {
 		this.fullName = fullName;
 	}
 
-    
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getBankAccount() {
+		return bankAccount;
+	}
+
+	public void setBankAccount(String bankAccount) {
+		this.bankAccount = bankAccount;
+	}
+
+	public String getBankCode() {
+		return bankCode;
+	}
+
+	public void setBankCode(String bankCode) {
+		this.bankCode = bankCode;
+	}
+
+	
 }

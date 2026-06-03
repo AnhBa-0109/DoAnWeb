@@ -410,4 +410,39 @@ public class BeFairService {
         if (excludedNames.isEmpty()) return "Tất cả thành viên";
         return "Tất cả trừ: " + String.join(", ", excludedNames);
     }
+    
+    //cập nhật thông tin cá nhân
+    public void updateUserProfile(String username, String fullName, String email, String phoneNumber, String bankAccount, String bankCode) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) throw new IllegalArgumentException("Không tìm thấy người dùng!");
+
+        if (fullName != null && !fullName.trim().isEmpty()) user.setFullName(fullName);
+        if (email != null && !email.trim().isEmpty()) user.setEmail(email);
+        if (phoneNumber != null && !phoneNumber.trim().isEmpty()) user.setPhoneNumber(phoneNumber);
+        if (bankAccount != null && !bankAccount.trim().isEmpty()) user.setBankAccount(bankAccount);
+        if (bankCode != null && !bankCode.trim().isEmpty()) user.setBankCode(bankCode);
+
+        userRepository.save(user);
+    }
+    
+    //lấy thông tin ngân hàng của user để tạo QR
+    public Map<String, String> getBankInfoByMemberName(Long groupId, String memberName) {
+        TravelGroup group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhóm!"));
+
+        return group.getMembers().stream()
+                .filter(m -> m.getName().equals(memberName) && m.getUser() != null)
+                .findFirst()
+                .map(m -> {
+                    Map<String, String> info = new HashMap<>();
+                    info.put("bankAccount", m.getUser().getBankAccount());
+                    info.put("bankCode", m.getUser().getBankCode());
+                    info.put("fullName", m.getUser().getFullName());
+                    return info;
+                })
+                .orElse(null);
+    }
+    
+    
+    
 }

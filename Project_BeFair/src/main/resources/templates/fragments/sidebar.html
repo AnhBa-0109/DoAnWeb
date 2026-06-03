@@ -17,6 +17,13 @@
 			<span class="font-label-md text-label-xl">Nhóm chi tiêu</span>
 		</a>
 		
+ 		<a class="text-on-surface-variant hover:bg-surface-variant rounded-2xl mx-4 my-1 flex items-center px-4 py-3 active:scale-98 transition-all" 
+        th:href="@{/profile}"
+        th:classappend="${activeTab == 'profile'} ? 'bg-primary/15 text-primary font-semibold' : 'text-on-surface-variant hover:bg-surface-variant'">
+            <span class="material-symbols-outlined mr-3" data-icon="person">person</span>
+            <span class="font-label-md text-label-xl">Hồ sơ cá nhân</span>
+        </a>
+		
 	</nav>
 	<div class="px-4 mt-auto">
 		<button onclick="openGlobalExpenseModal()" class="w-full bg-[rgb(6,149,133)] text-white py-4 px-6 rounded-2xl font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-[rgb(0,108,95)] shadow-lg shadow-primary/20 transition-all">

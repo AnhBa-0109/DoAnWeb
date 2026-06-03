@@ -1,7 +1,6 @@
-package khanh.ntu.BF.controllers; // Bạn đổi lại package cho đúng cấu trúc dự án nhé
+package khanh.ntu.BF.controllers;
 
-
-import khanh.ntu.BF.models.MemberDebtDto;
+import khanh.ntu.BF.Repository.TravelGroupRepository;
 import khanh.ntu.BF.models.SettleUpDto;
 import khanh.ntu.BF.models.User;
 import khanh.ntu.BF.services.BeFairService;
@@ -19,6 +18,9 @@ public class GroupApiController {
 
     @Autowired
     private BeFairService beFairService;
+    
+    @Autowired
+    private TravelGroupRepository groupRepository;
 
     @GetMapping("/{groupId}/settle-up")
     public ResponseEntity<List<SettleUpDto>> getSettleUpInstructions(@PathVariable Long groupId) {
@@ -29,7 +31,7 @@ public class GroupApiController {
         return ResponseEntity.ok(instructions);
     }
 
-
+    
     @GetMapping("/search-users")
     public ResponseEntity<List<Map<String, String>>> searchUsers(@RequestParam String keyword) {
         List<User> users = beFairService.searchUsersByKeyword(keyword);
@@ -42,5 +44,18 @@ public class GroupApiController {
         }).collect(Collectors.toList());
         
         return ResponseEntity.ok(result);
+    }
+    
+    
+    @GetMapping("/{groupId}/bank-info")
+    public ResponseEntity<Map<String, String>> getBankInfo(@PathVariable Long groupId,
+                                                           @RequestParam String memberName) {
+        Map<String, String> info = beFairService.getBankInfoByMemberName(groupId, memberName);
+
+        if (info == null || info.get("bankAccount") == null || info.get("bankCode") == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(info);
     }
 }
