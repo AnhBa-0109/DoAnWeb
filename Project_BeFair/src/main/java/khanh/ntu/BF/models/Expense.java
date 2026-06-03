@@ -35,7 +35,12 @@ public class Expense {
         joinColumns = @JoinColumn(name = "expense_id"),
         inverseJoinColumns = @JoinColumn(name = "member_id")
     )
+        
     private List<Member> sharers = new ArrayList<>();
+    
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private User createdBy;
     
 	public Expense() {
 		super();
@@ -130,5 +135,13 @@ public class Expense {
 		this.sharers = sharers;
 	}
 
-	
+
+	public User getCreatedBy() {
+		return createdBy;
+	}
+
+
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
+	}
 }

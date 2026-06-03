@@ -1,6 +1,5 @@
 package khanh.ntu.BF.controllers;
 
-import khanh.ntu.BF.Repository.TravelGroupRepository;
 import khanh.ntu.BF.models.SettleUpDto;
 import khanh.ntu.BF.models.User;
 import khanh.ntu.BF.services.BeFairService;
@@ -18,9 +17,6 @@ public class GroupApiController {
 
     @Autowired
     private BeFairService beFairService;
-    
-    @Autowired
-    private TravelGroupRepository groupRepository;
 
     @GetMapping("/{groupId}/settle-up")
     public ResponseEntity<List<SettleUpDto>> getSettleUpInstructions(@PathVariable Long groupId) {

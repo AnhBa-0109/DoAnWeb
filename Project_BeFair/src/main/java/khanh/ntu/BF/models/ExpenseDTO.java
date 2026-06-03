@@ -1,6 +1,5 @@
 package khanh.ntu.BF.models;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class ExpenseDTO {
@@ -13,6 +12,7 @@ public class ExpenseDTO {
 	    private String invoiceImage;
 	    private String sharersDisplayText;
 	    private LocalDateTime createAt;
+	    private String createdByUsername;
 
 	    public ExpenseDTO() {}
 
@@ -102,5 +102,11 @@ public class ExpenseDTO {
 			this.createAt = createAt;
 		}
 
-	    
+		public String getCreatedByUsername() {
+			return createdByUsername;
+		}
+
+		public void setCreatedByUsername(String createdByUsername) {
+			this.createdByUsername = createdByUsername;
+		}
 }

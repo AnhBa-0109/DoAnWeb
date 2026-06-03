@@ -21,15 +21,15 @@ public class ExpenseController {
 
     //Thêm hóa đơn
     @PostMapping("/group/{id}/add-expense")
-    public String addExpense(@PathVariable Long id, 
-                             @RequestParam String description, 
-                             @RequestParam Double amount, 
+    public String addExpense(@PathVariable Long id,
+                             @RequestParam String description,
+                             @RequestParam Double amount,
                              @RequestParam Long payerId,
                              @RequestParam(required = false) List<Long> sharerIds,
                              @RequestParam("imageFile") MultipartFile file,
+                             Principal principal,
                              RedirectAttributes redirectAttributes) {
-
-        bfService.addExpense(id, description, amount, payerId, sharerIds, file);
+        bfService.addExpense(id, description, amount, payerId, sharerIds, file, principal.getName());
         redirectAttributes.addFlashAttribute("successMessage", "Thêm hóa đơn thành công!");
         return "redirect:/group/" + id;
     }
@@ -37,40 +37,40 @@ public class ExpenseController {
     //Xóa hóa đơn
     @PostMapping("/group/{groupId}/delete-expense/{expenseId}")
     public String deleteExpense(@PathVariable Long groupId, @PathVariable Long expenseId, Principal principal, RedirectAttributes redirectAttributes) {
-    	
-    	if (!bfService.isGroupOwner(groupId, principal.getName())) {
+        if (!bfService.isGroupOwner(groupId, principal.getName())) {
             redirectAttributes.addFlashAttribute("errorMessage", "Bạn không phải chủ nhóm, không có quyền xóa hóa đơn!");
             return "redirect:/group/" + groupId;
         }
-    	redirectAttributes.addFlashAttribute("successMessage", "Xóa hóa đơn!");
         bfService.deleteExpense(expenseId);
+        redirectAttributes.addFlashAttribute("successMessage", "Xóa hóa đơn thành công!");
         return "redirect:/group/" + groupId;
     }
     
     //hàm sửa hóa đơn
     @PostMapping("/group/{groupId}/edit-expense/{expenseId}")
-    public String updateExpense(@PathVariable Long groupId, 
+    public String updateExpense(@PathVariable Long groupId,
                                 @PathVariable Long expenseId,
-                                @RequestParam String description, 
-                                @RequestParam Double amount, 
+                                @RequestParam String description,
+                                @RequestParam Double amount,
                                 @RequestParam Long payerId,
                                 @RequestParam(required = false) List<Long> sharerIds,
                                 @RequestParam("imageFile") MultipartFile file,
                                 Principal principal,
                                 RedirectAttributes redirectAttributes) {
+    	
+        boolean isOwner = bfService.isGroupOwner(groupId, principal.getName());
+        boolean isCreator = bfService.isExpenseCreator(expenseId, principal.getName());
 
-        if (!bfService.isGroupOwner(groupId, principal.getName())) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Bạn không có quyền sửa!");
+        if (!isOwner && !isCreator) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Bạn không có quyền sửa hóa đơn này!");
             return "redirect:/group/" + groupId;
         }
-
         try {
             bfService.updateExpense(expenseId, description, amount, payerId, sharerIds, file);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật hóa đơn thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Cập nhật thất bại: " + e.getMessage());
         }
-        
         return "redirect:/group/" + groupId;
     }
 }

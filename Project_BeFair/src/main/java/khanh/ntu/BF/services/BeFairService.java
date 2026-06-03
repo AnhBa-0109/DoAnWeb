@@ -104,7 +104,9 @@ public class BeFairService {
         boolean isInExpense = expenses.stream().anyMatch(e -> {
             boolean isPayer = e.getPayer() != null && e.getPayer().getId().equals(memberId);
             boolean isSharer = e.getSharers().stream().anyMatch(s -> s.getId().equals(memberId));
-            return isPayer || isSharer;
+            boolean isCreator = e.getCreatedBy() != null && m.getUser() != null 
+                                && e.getCreatedBy().getId().equals(m.getUser().getId());
+            return isPayer || isSharer || isCreator;
         });
 
         if (isInExpense) {
@@ -124,9 +126,10 @@ public class BeFairService {
     }
     
     //hàm thêm hóa đơn
-    public void addExpense(Long groupId, String description, Double amount, Long payerId, List<Long> sharerIds, MultipartFile file) {
+    public void addExpense(Long groupId, String description, Double amount, Long payerId, List<Long> sharerIds, MultipartFile file, String username) {
         TravelGroup group = groupRepository.findById(groupId).orElseThrow();
         Member payer = memberRepository.findById(payerId).orElseThrow();
+        User creator = userRepository.findByUsername(username);
         
         Expense exp = new Expense();
         exp.setGroup(group);
@@ -134,6 +137,7 @@ public class BeFairService {
         exp.setDescription(description);
         exp.setAmount(amount);
         exp.setCreateAt(LocalDateTime.now());
+        exp.setCreatedBy(creator);
 
         if (file != null && !file.isEmpty()) {
             try {
@@ -375,6 +379,10 @@ public class BeFairService {
             dto.setAmount(expense.getAmount());
             dto.setCreateAt(expense.getCreateAt());
             
+            if (expense.getCreatedBy() != null) {
+                dto.setCreatedByUsername(expense.getCreatedBy().getUsername());
+            }
+            
             if (expense.getPayer() != null) {
                 dto.setPayerId(expense.getPayer().getId());
                 dto.setPayerName(expense.getPayer().getName());
@@ -453,5 +461,11 @@ public class BeFairService {
     }
     
     
-    
+    public boolean isExpenseCreator(Long expenseId, String username) {
+        Expense expense = expenseRepository.findById(expenseId).orElse(null);
+        
+        if (expense == null || expense.getCreatedBy() == null) return false;
+        
+        return expense.getCreatedBy().getUsername().equals(username);
+    }
 }

@@ -59,11 +59,16 @@
 					        <div class="flex-1">
 					            <h4 class="font-bold text-slate-800 text-lg mb-1 group-hover:text-teal-700 transition-colors" th:text="${exp.description}">Nội dung</h4>
 					            <p class="text-xs text-slate-500 flex items-center gap-1">
-					                <span class="w-2 h-2 rounded-full bg-teal-500"></span>
-					                <span class="text-slate-700 font-bold" th:text="${exp.payerName}"></span> 
-					                <span class="text-slate-400">đã trả lúc</span> 
-					                <span class="font-medium text-slate-400" th:text="${#temporals.format(exp.createAt, 'HH:mm dd/MM')}"></span>
-					            </p>
+								    <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+								    <span class="text-slate-700 font-bold" th:text="${exp.payerName}"></span>
+								    <span class="text-slate-400">đã trả lúc</span>
+								    <span class="font-medium text-slate-400" th:text="${#temporals.format(exp.createAt, 'HH:mm dd/MM')}"></span>
+								</p>
+								<p th:if="${exp.createdByUsername != null}" class="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+								    <span class="material-symbols-outlined text-[12px] text-indigo-400">person</span>
+								    <span>Tạo bởi</span>
+								    <span class="font-bold text-indigo-500" th:text="'@' + ${exp.createdByUsername}"></span>
+								</p>
 					        </div>
 					                        
 					        <div class="text-right flex flex-col justify-center">
@@ -318,6 +323,10 @@
                             <span class="text-slate-400">Áp dụng cho:</span>
                             <span class="font-bold text-teal-600 text-right" th:text="${exp.sharersDisplayText}"></span>
                         </div>
+                        <div th:if="${exp.createdByUsername != null}" class="flex justify-between text-sm">
+						    <span class="text-slate-400">Người tạo:</span>
+						    <span class="font-bold text-indigo-500" th:text="'@' + ${exp.createdByUsername}"></span>
+						</div>
                         <div class="space-y-2">
                             <span class="text-xs font-bold text-slate-400 uppercase">Ảnh chứng từ:</span>
                             <div class="w-full h-48 bg-slate-100 rounded-2xl overflow-hidden flex items-center justify-center border-2 border-dashed border-slate-200">
@@ -328,18 +337,20 @@
                         </div>
                         
                         <div class="flex gap-3 pt-4">
-                            <button type="button" th:onclick="'switchModalMode(' + ${exp.id} + ', \'edit\')'" 
-                                    class="flex-1 py-3 bg-teal-50 hover:bg-teal-100 text-teal-700 font-bold rounded-2xl transition-all text-center text-sm flex items-center justify-center gap-2">
-                                <span class="material-symbols-outlined text-base">edit</span> Sửa hóa đơn
-                            </button>
-                            
-                            <form th:action="@{/group/{groupId}/delete-expense/{expenseId}(groupId=${group.id}, expenseId=${exp.id})}" method="POST" class="flex-1">
-                                <button type="submit" onclick="return confirm('Bạn chắc chắn muốn xóa hóa đơn này chứ?')"
-                                        class="w-full py-3 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded-2xl transition-all text-center text-sm flex items-center justify-center gap-2">
-                                    <span class="material-symbols-outlined text-base">delete</span> Xóa
-                                </button>
-                            </form>
-                        </div>
+						    <button th:if="${group.owner.username == #authentication.name or exp.createdByUsername == #authentication.name}"
+						            type="button" th:onclick="'switchModalMode(' + ${exp.id} + ', \'edit\')'"
+						            class="flex-1 py-3 bg-teal-50 hover:bg-teal-100 text-teal-700 font-bold rounded-2xl transition-all text-center text-sm flex items-center justify-center gap-2">
+						        <span class="material-symbols-outlined text-base">edit</span> Sửa hóa đơn
+						    </button>
+	
+						    <form th:if="${group.owner.username == #authentication.name}"
+						          th:action="@{/group/{groupId}/delete-expense/{expenseId}(groupId=${group.id}, expenseId=${exp.id})}" method="POST" class="flex-1">
+						        <button type="submit" onclick="return confirm('Bạn chắc chắn muốn xóa hóa đơn này chứ?')"
+						                class="w-full py-3 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded-2xl transition-all text-center text-sm flex items-center justify-center gap-2">
+						            <span class="material-symbols-outlined text-base">delete</span> Xóa
+						        </button>
+						    </form>
+						</div>
                     </div>
                 </div>
 
