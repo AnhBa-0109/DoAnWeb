@@ -175,4 +175,23 @@ public class TravelGroupController {
         }
         return "redirect:/group/" + groupId;
     }
+    
+    //hủy liên kết user khỏi member
+    @PostMapping("/group/{groupId}/unlink-member")
+    public String unlinkMemberFromUser(@PathVariable Long groupId,
+                                       @RequestParam Long memberId,
+                                       Principal principal,
+                                       RedirectAttributes redirectAttributes) {
+        if (!bfService.isGroupOwner(groupId, principal.getName())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Bạn không phải chủ nhóm, không có quyền hủy liên kết!");
+            return "redirect:/group/" + groupId;
+        }
+        try {
+            bfService.unlinkMemberFromUser(memberId);
+            redirectAttributes.addFlashAttribute("successMessage", "Hủy liên kết thành công!");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/group/" + groupId;
+    }
 }

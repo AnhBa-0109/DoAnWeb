@@ -152,16 +152,16 @@
 	                    </div>
 	                    
 	                    <div class="flex flex-col min-w-0 flex-1 gap-0.5">
-	                        <span class="text-[13px] font-bold text-slate-700 truncate" th:text="${m.name}">Tên</span>
-	                        
-	                        <div th:if="${m.user != null}" class="flex items-center text-emerald-600 gap-0.5">
-	                            <span class="material-symbols-outlined text-[14px]">verified</span>
-	                            <span class="text-[11px] font-semibold">@<span th:text="${m.user.username}">username</span></span>
-	                        </div>
-	                    </div>
+						    <span class="text-[13px] font-bold text-slate-700 truncate" th:text="${m.name}">Tên</span>
+						
+						    <div th:if="${m.user != null}" class="flex items-center text-emerald-600 gap-0.5">
+						        <span class="material-symbols-outlined text-[14px]">verified</span>
+						        <span class="text-[11px] font-semibold">@<span th:text="${m.user.username}">username</span></span>
+						    </div>
+						</div>
 	                    
 	                    <div th:if="${group.owner.username == #authentication.name}" class="ml-auto opacity-0 group-hover:opacity-100 flex items-center flex-shrink-0 gap-1 bg-white p-1 rounded-lg shadow-sm transition-opacity duration-200">
-    
+
 						    <button th:if="${m.user == null}"
 						            type="button"
 						            th:onclick="'toggleLinkInput(' + ${m.id} + ')'"
@@ -169,17 +169,35 @@
 						            title="Liên kết tài khoản">
 						        <span class="material-symbols-outlined text-[18px] leading-none">link</span>
 						    </button>
+
+						    <form th:if="${m.user != null}"
+						          th:action="@{/group/{groupId}/unlink-member(groupId=${group.id})}"
+						          method="post"
+						          onsubmit="return confirm('Hủy liên kết tài khoản này?')"
+						          class="flex items-center justify-center">
+						        <input type="hidden" name="memberId" th:value="${m.id}"/>
+						        <button type="submit"
+						                class="flex items-center justify-center text-teal-600 hover:text-rose-500 p-1 transition-colors"
+						                title="Hủy liên kết">
+						            <span class="material-symbols-outlined text-[18px] leading-none">link_off</span>
+						        </button>
+						    </form>
 						
-						    <button onclick="openEditMemberModal(this)" 
-						            th:data-id="${m.id}" 
+						    <button onclick="openEditMemberModal(this)"
+						            th:data-id="${m.id}"
 						            th:data-name="${m.name}"
 						            class="flex items-center justify-center text-slate-400 hover:text-teal-600 p-1 transition-colors"
 						            title="Sửa tên">
 						        <span class="material-symbols-outlined text-[18px] leading-none">edit</span>
 						    </button>
-						    
-						    <form th:action="@{/group/{gid}/delete-member/{mid}(gid=${group.id}, mid=${m.id})}" method="post" onsubmit="return confirm('Xóa thành viên này?')" class="flex items-center justify-center">
-						        <button type="submit" class="flex items-center justify-center text-slate-400 hover:text-rose-500 p-1 transition-colors" title="Xóa">
+						
+						    <form th:action="@{/group/{gid}/delete-member/{mid}(gid=${group.id}, mid=${m.id})}"
+						          method="post"
+						          onsubmit="return confirm('Xóa thành viên này?')"
+						          class="flex items-center justify-center">
+						        <button type="submit"
+						                class="flex items-center justify-center text-slate-400 hover:text-rose-500 p-1 transition-colors"
+						                title="Xóa">
 						            <span class="material-symbols-outlined text-[18px] leading-none">delete</span>
 						        </button>
 						    </form>

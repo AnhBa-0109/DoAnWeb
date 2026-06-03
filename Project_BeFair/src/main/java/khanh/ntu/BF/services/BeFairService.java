@@ -343,6 +343,15 @@ public class BeFairService {
         memberRepository.save(member);
     }
     
+    //hàm hủy liên kết member với user
+    @Transactional
+    public void unlinkMemberFromUser(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thành viên!"));
+        member.setUser(null);
+        memberRepository.save(member);
+    }
+    
     //hàm tìm kiếm người dùng
     public List<User> searchUsersByKeyword(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
