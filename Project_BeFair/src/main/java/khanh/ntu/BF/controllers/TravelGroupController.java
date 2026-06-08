@@ -56,6 +56,7 @@ public class TravelGroupController {
     	String username = principal.getName();
         TravelGroup group = bfService.getGroupById(id);
         User currentUser = userRepository.findByUsername(username);
+        List<TravelGroup> userGroups = groupRepository.findByOwnerOrMember(currentUser.getId());
         List<Member> currentMembers = group.getMembers().stream()
                                            .filter(Member::isActive)
                                            .collect(Collectors.toList());
@@ -68,6 +69,7 @@ public class TravelGroupController {
         model.addAttribute("expenses", group.getExpenses());
         model.addAttribute("balances", bfService.calculateBalances(id));
         model.addAttribute("expenses", expenseDTOs);
+        model.addAttribute("groups", userGroups);
         
         return "detailGroup";
     }
