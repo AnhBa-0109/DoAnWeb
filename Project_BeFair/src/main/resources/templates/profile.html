@@ -113,7 +113,70 @@
             </div>
         </div>
     </main>
-
+	<div id="globalExpenseModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+	    <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+	        
+	        <div class="p-6 border-b flex justify-between items-center bg-slate-50">
+	            <h3 class="text-xl font-black flex items-center gap-2 text-slate-800">
+	                <span class="material-symbols-outlined text-[rgb(6,149,133)]">add_notes</span> Thêm hóa đơn nhanh
+	            </h3>
+	            <button onclick="closeGlobalExpenseModal()" class="text-slate-400 hover:text-rose-500 transition-colors">
+	                <span class="material-symbols-outlined">close</span>
+	            </button>
+	        </div>
+	        
+	        <form id="globalExpenseForm" method="post" enctype="multipart/form-data" class="p-6 space-y-5 overflow-y-auto custom-scroll">
+	            
+	            <div>
+	                <label class="block text-xs font-bold text-slate-500 uppercase mb-2 tracking-wide">Chọn chuyến đi / Nhóm chi tiêu</label>
+	                <select id="modalGroupSelect" required onchange="onGroupSelectionChange(this.value)"
+	                        class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-teal-500 outline-none transition-all">
+	                    <option value="" disabled selected>-- Chọn nhóm muốn thêm hóa đơn --</option>
+	                    <option th:each="g : ${groups}" th:value="${g.id}" th:text="${g.name}"></option>
+	                </select>
+	            </div>
+	
+	            <div id="expenseFormFields" class="space-y-5 opacity-40 pointer-events-none transition-all duration-300">
+	                
+	                <div class="grid grid-cols-2 gap-4">
+	                    <div class="col-span-2">
+	                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Hóa đơn cho việc gì?</label>
+	                        <input name="description" required class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 focus:bg-white focus:ring-2 focus:ring-teal-500 outline-none transition-all" placeholder="VD: Ăn lẩu, Tiền phòng Villa..." type="text"/>
+	                    </div>
+	                    <div>
+	                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Số tiền (VNĐ)</label>
+	                        <input id="global-currency-input" required class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-bold text-[rgb(6,149,133)] focus:bg-white focus:ring-2 focus:ring-teal-500 outline-none transition-all" placeholder="0" type="text"/>
+	                        <input type="hidden" name="amount" id="global-real-amount">
+	                    </div>
+	                    <div>
+	                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Người chi trả</label>
+	                        <select id="modalPayerSelect" name="payerId" required class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 focus:bg-white focus:ring-2 focus:ring-teal-500 outline-none transition-all">
+	                            <option value="">Chọn người trả...</option>
+	                        </select>
+	                    </div>
+	                </div>
+	
+	                <div>
+	                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Áp dụng nợ cho ai?</label>
+	                    <div id="modalSharersContainer" class="bg-slate-50 p-4 rounded-md space-y-2 max-h-40 overflow-y-auto custom-scroll border border-slate-200">
+	                        <p class="text-xs text-slate-400 italic">Vui lòng chọn nhóm trước...</p>
+	                    </div>
+	                    <p class="text-[10px] text-slate-400 mt-2 italic">* Chỉ những người được tích mới phải gánh nợ hóa đơn này.</p>
+	                </div>
+	
+	                <div>
+	                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Ảnh hóa đơn (Nếu có)</label>
+	                    <input name="imageFile" type="file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 cursor-pointer"/>
+	                </div>
+	
+	                <button type="submit" class="w-full bg-[rgb(6,149,133)] hover:bg-[rgb(0,108,95)] text-white py-4 rounded-2xl font-black shadow-lg shadow-teal-200/50 transition-all mt-4 uppercase tracking-wide">
+	                    LƯU HÓA ĐƠN GIAO DỊCH
+	                </button>
+	            </div>
+	            
+	        </form>
+	    </div>
+	</div>
     <script>
         async function loadBanks() {
             const select = document.getElementById('bankSelect');
@@ -147,6 +210,65 @@
                     setTimeout(() => toast.remove(), 400);
                 }, 3000);
             });
+        });
+        function openGlobalExpenseModal() {
+            document.getElementById('globalExpenseModal').classList.remove('hidden');
+        }
+
+        function closeGlobalExpenseModal() {
+            document.getElementById('globalExpenseModal').classList.add('hidden');
+            document.getElementById('globalExpenseForm').reset();
+            onGroupSelectionChange(""); 
+        }
+
+        function onGroupSelectionChange(groupId) {
+            const formFields = document.getElementById('expenseFormFields');
+            const formAction = document.getElementById('globalExpenseForm');
+            const payerSelect = document.getElementById('modalPayerSelect');
+            const sharersContainer = document.getElementById('modalSharersContainer');
+            
+            if (!groupId) {
+                formFields.classList.add('opacity-40', 'pointer-events-none');
+                payerSelect.innerHTML = '<option value="">Chọn người trả...</option>';
+                sharersContainer.innerHTML = '<p class="text-xs text-slate-400 italic">Vui lòng chọn nhóm trước...</p>';
+                return;
+            }
+            
+            formFields.classList.remove('opacity-40', 'pointer-events-none');
+            formAction.action = `/group/${groupId}/add-expense`;
+            
+            const members = groupMembersMap[groupId] || [];
+            
+            let payerHtml = '<option value="" disabled selected>Chọn người trả...</option>';
+            members.forEach(m => {
+                payerHtml += `<option value="${m.id}">${m.name}</option>`;
+            });
+            payerSelect.innerHTML = payerHtml;
+            
+            let sharersHtml = '';
+            if (members.length === 0) {
+                sharersHtml = '<p class="text-xs text-rose-400 italic">Nhóm này chưa có thành viên nào!</p>';
+            } else {
+                members.forEach(m => {
+                    sharersHtml += `
+                        <div class="flex items-center gap-3 py-1.5 px-2 hover:bg-slate-100 rounded-lg transition-colors">
+                            <input type="checkbox" name="sharerIds" value="${m.id}" checked class="rounded text-teal-600 focus:ring-teal-500 h-4 w-4 cursor-pointer">
+                            <span class="text-sm font-medium text-slate-700 select-none">${m.name}</span>
+                        </div>
+                    `;
+                });
+            }
+            sharersContainer.innerHTML = sharersHtml;
+        }
+
+        document.getElementById('global-currency-input').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value !== "") {
+                e.target.value = new Intl.NumberFormat('en-US').format(value);
+            } else {
+                e.target.value = "";
+            }
+            document.getElementById('global-real-amount').value = value;
         });
     </script>
 </body>
