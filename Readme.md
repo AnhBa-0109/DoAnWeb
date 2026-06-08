@@ -48,10 +48,6 @@ Giao diện màn hình hồ sơ cá nhân
 
 ![Hồ sơ cá nhân](images/hosocanhan.png)
 
-Giao diện màn hình hồ sơ cá nhân
-
-![Hồ sơ cá nhân](images/hosocanhan.png)
-
 Giao diện màn hình chi tiết nhóm
 
 ![Màn hình chi tiết nhóm](images/chitietnhom.png)
