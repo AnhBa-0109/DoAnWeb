@@ -17,10 +17,82 @@
 ---
 
 ## 📸 Giao diện ứng dụng
+Giao diện đăng nhập - đăng ký
 
-> *Ảnh minh họa giao diện ứng dụng — xem thư mục `/images` trong repo.*
+<table border="0">
+  <tr>
+    <td align="center">
+      <img src="images/login.png" alt="Ảnh 1" width="100%"/>
+      <br>
+      <b>Giao diện đăng nhập</b>
+    </td>
+    <td align="center">
+      <img src="images/register.png" alt="Ảnh 2" width="100%"/>
+      <br>
+      <b>Giao diện đăng ký</b>
+    </td>
+  </tr>
+</table>
 
----
+Giao diện màn hình chính
+
+![Màn hình chính](images/manhinhchinh.png)
+
+Form chức năng thêm hóa đơn nhanh
+
+<p align="center">
+  <img src="images/themhoadonnhanh.png" width="400" alt="Tên ảnh">
+</p>
+
+Giao diện màn hình hồ sơ cá nhân
+
+![Hồ sơ cá nhân](images/hosocanhan.png)
+
+Giao diện màn hình hồ sơ cá nhân
+
+![Hồ sơ cá nhân](images/hosocanhan.png)
+
+Giao diện màn hình chi tiết nhóm
+
+![Màn hình chi tiết nhóm](images/chitietnhom.png)
+
+<table border="0">
+  <tr>
+    <td align="center">
+      <img src="images/thanhvien.png" alt="Ảnh 1" width="100%"/>
+      <br>
+      <b>Bảng hiển thị danh sách thành viên</b>
+    </td>
+    <td align="center">
+      <img src="images/themhoadon.png" alt="Ảnh 2" width="100%"/>
+      <br>
+      <b>Form nhập hóa đơn</b>
+    </td>
+    <td align="center">
+      <img src="images/chitiethoadon.png" alt="Ảnh 3" width="100%"/>
+      <br>
+      <b>Chi tiết hóa đơn</b>
+    </td>
+  </tr>
+</table>
+
+Giao diện bảng quyết toán
+
+<table border="0">
+  <tr>
+    <td align="center">
+        <img src="images/quyettoan.png" alt="Ảnh 1" width="100%"/>
+      <br>
+      <b>Bảng quyết toán</b>
+    </td>
+    <td align="center">
+      <img src="images/taoqr.png" alt="Ảnh 2" width="100%"/>
+      <br>
+      <b>Tạo QR</b>
+    </td>
+    </td>
+  </tr>
+</table>
 
 ## ✨ Tính năng nổi bật
 
