@@ -80,17 +80,35 @@ public class BeFairService {
     
     //hàm thêm thành viên mới
     public void addNewMember(Long groupId, String name) {
-    	TravelGroup group = groupRepository.findById(groupId).get();
+        TravelGroup group = groupRepository.findById(groupId).get();
+        
+        boolean nameExists = group.getMembers().stream()
+                .anyMatch(m -> m.getName().equalsIgnoreCase(name.trim()));
+        
+        if (nameExists) {
+            throw new IllegalArgumentException("Tên thành viên đã tồn tại trong nhóm!");
+        }
+        
         Member member = new Member();
-        member.setName(name);
+        member.setName(name.trim());
         member.setGroup(group);
         memberRepository.save(member);
     }
     
     //hàm sửa tên thành viên
     public void editMember(Long memberId, String newName) {
-    	Member member = memberRepository.findById(memberId).get();
-        member.setName(newName);
+        Member member = memberRepository.findById(memberId).get();
+        TravelGroup group = member.getGroup();
+        
+        boolean nameExists = group.getMembers().stream()
+                .anyMatch(m -> !m.getId().equals(memberId)
+                           && m.getName().equalsIgnoreCase(newName.trim()));
+        
+        if (nameExists) {
+            throw new IllegalArgumentException("Tên thành viên đã tồn tại trong nhóm!");
+        }
+        
+        member.setName(newName.trim());
         memberRepository.save(member);
     }
     

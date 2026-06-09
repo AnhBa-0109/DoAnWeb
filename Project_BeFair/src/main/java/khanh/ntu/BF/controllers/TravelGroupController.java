@@ -113,12 +113,16 @@ public class TravelGroupController {
     //Thêm thành viên
     @PostMapping("/group/{id}/add-member")
     public String addMember(@PathVariable Long id, @RequestParam String memberName, RedirectAttributes redirectAttributes) {
-    	if( memberName== null || memberName.trim().isEmpty()) {
-    		redirectAttributes.addFlashAttribute("errorMessage", "Tên không được để trống!");
-    		return "redirect:/group/" + id;
-    	}
-    	bfService.addNewMember(id, memberName);
-    	redirectAttributes.addFlashAttribute("successMessage", "Thêm thành viên thành công!");
+        if (memberName == null || memberName.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Tên không được để trống!");
+            return "redirect:/group/" + id;
+        }
+        try {
+            bfService.addNewMember(id, memberName);
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm thành viên thành công!");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/group/" + id;
     }
     
@@ -129,15 +133,17 @@ public class TravelGroupController {
     							RedirectAttributes redirectAttributes) {
     	
     	if (!bfService.isGroupOwner(id, principal.getName())) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Bạn không phải chủ nhóm, không có quyền sửa tên thành viên!");
+            redirectAttributes.addFlashAttribute("errorMessage", "Bạn không phải chủ nhóm!");
             return "redirect:/group/" + id;
         }
-    	
         if (newName != null && !newName.trim().isEmpty()) {
-            bfService.editMember(memberId, newName);
-            redirectAttributes.addFlashAttribute("successMessage", "Sửa tên thành viên thành công!");
+            try {
+                bfService.editMember(memberId, newName);
+                redirectAttributes.addFlashAttribute("successMessage", "Sửa tên thành viên thành công!");
+            } catch (IllegalArgumentException e) {
+                redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            }
         }
-        
         return "redirect:/group/" + id;
     }
     
